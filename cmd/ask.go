@@ -1,5 +1,5 @@
 /*
-Copyright © 2023 NAME HERE <EMAIL ADDRESS>
+Copyright © 2023 Chandler <chandler@chand1012.dev>
 */
 package cmd
 
@@ -19,7 +19,7 @@ var askCmd = &cobra.Command{
 	Use:   "ask",
 	Short: "Ask ChatGPT a question from the command line.",
 	Long: `Ask ChatGPT a question from the command line.
-	
+
 If '-q' is not specified, the user will be prompted to enter a question.
 	`,
 	Run: func(cmd *cobra.Command, args []string) {
