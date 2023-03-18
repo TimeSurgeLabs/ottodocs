@@ -11,7 +11,7 @@ import (
 
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
-	Use:   "ottodocs",
+	Use:   "otto",
 	Short: "Document your code with ease",
 	Long:  `Code documentation made easy using GPT.`,
 	// Uncomment the following line if your bare application

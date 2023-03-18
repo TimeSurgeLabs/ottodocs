@@ -11,19 +11,17 @@ import (
 	"github.com/spf13/cobra"
 )
 
-var repoPath string
-var preambleFile string
-var outputFile string
-var estimateTokens bool
-var ignoreFilePath string
-var ignoreGitignore bool
-var outputJSON bool
-
 // promptCmd represents the prompt command
 var promptCmd = &cobra.Command{
 	Use:   "prompt",
 	Short: "Generates a ChatGPT prompt from a given Git repo",
-	Long:  `Generates a ChatGPT prompt from a given Git repo.`,
+	Long:  `Generates a ChatGPT prompt from a given Git repo. Specify the path to the repo as the first positional argument.`,
+	Args: cobra.PositionalArgs(func(cmd *cobra.Command, args []string) error {
+		if len(args) < 1 {
+			return fmt.Errorf("requires a path to a repository")
+		}
+		return nil
+	}),
 	Run: func(cmd *cobra.Command, args []string) {
 		repoPath = args[0]
 		ignoreList := prompt.GenerateIgnoreList(repoPath, ignoreFilePath, !ignoreGitignore)
@@ -82,6 +80,7 @@ var promptCmd = &cobra.Command{
 func init() {
 	rootCmd.AddCommand(promptCmd)
 
+	// see cmd/vars.go for the definition of these flags
 	promptCmd.Flags().StringVarP(&preambleFile, "preamble", "p", "", "path to preamble text file")
 	// output to file flag. Should be a string
 	promptCmd.Flags().StringVarP(&outputFile, "output", "o", "", "path to output file")

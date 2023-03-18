@@ -14,9 +14,9 @@ import (
 
 var question string
 
-// askCmd represents the ask command
-var askCmd = &cobra.Command{
-	Use:   "ask",
+// chatCmd represents the chat command
+var chatCmd = &cobra.Command{
+	Use:   "chat",
 	Short: "Ask ChatGPT a question from the command line.",
 	Long: `Ask ChatGPT a question from the command line.
 
@@ -37,11 +37,11 @@ If '-q' is not specified, the user will be prompted to enter a question.
 
 		// if the question is not provided, prompt the user for it
 		if question == "" {
-			fmt.Print("What would you like to ask ChatGPT?\n> ")
+			fmt.Print("What would you like to chat ChatGPT?\n> ")
 			fmt.Scanln(&question)
 		}
 
-		// ask ChatGPT the question
+		// chat ChatGPT the question
 		resp, err := openai.CreateChatSimple(question, 0) // 0 sets the max tokens to 1024
 		if err != nil {
 			fmt.Printf("Error: %s", err)
@@ -55,17 +55,7 @@ If '-q' is not specified, the user will be prompted to enter a question.
 }
 
 func init() {
-	rootCmd.AddCommand(askCmd)
+	rootCmd.AddCommand(chatCmd)
 
-	// Here you will define your flags and configuration settings.
-
-	// Cobra supports Persistent Flags which will work for this command
-	// and all subcommands, e.g.:
-	// askCmd.PersistentFlags().String("foo", "", "A help for foo")
-
-	// Cobra supports local flags which will only run when this command
-	// is called directly, e.g.:
-	// askCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
-
-	askCmd.Flags().StringVarP(&question, "question", "q", "", "Question to ask ChatGPT")
+	chatCmd.Flags().StringVarP(&question, "question", "q", "", "Question to chat ChatGPT")
 }
