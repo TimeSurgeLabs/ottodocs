@@ -1,0 +1,48 @@
+/*
+Copyright © 2023 NAME HERE <EMAIL ADDRESS>
+*/
+package cmd
+
+import (
+	"fmt"
+	"os"
+
+	"github.com/chand1012/ottodocs/config"
+	"github.com/spf13/cobra"
+)
+
+var apiKey string
+
+// loginCmd represents the login command
+var loginCmd = &cobra.Command{
+	Use:   "login",
+	Short: "Add an API key to your configuration",
+	Long: `Add an API key to your configuration. 
+This API key will be used to authenticate with the OpenAI ChatGPT API.`,
+	Run: func(cmd *cobra.Command, args []string) {
+		// if the api key is not provided, prompt the user for it
+		if apiKey == "" {
+			fmt.Print("Please provide an API key: ")
+			fmt.Scanln(&apiKey)
+		}
+		// save the API key to a configuration file at ~/.ottodocs/config.json
+		conf, err := config.Load()
+		if err != nil {
+			fmt.Printf("Error: %s", err)
+			os.Exit(1)
+		}
+		conf.APIKey = apiKey
+		err = conf.Save()
+		if err != nil {
+			fmt.Printf("Error: %s", err)
+			os.Exit(1)
+		}
+		fmt.Println("API key saved successfully!")
+	},
+}
+
+func init() {
+	rootCmd.AddCommand(loginCmd)
+
+	loginCmd.Flags().StringVarP(&apiKey, "apikey", "k", "", "API key to add to configuration")
+}
