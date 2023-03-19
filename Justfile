@@ -9,3 +9,6 @@ clean:
 
 run *commands:
   go run main.go {{commands}}
+
+cobra-docs:
+  go run docs/gen_docs.go

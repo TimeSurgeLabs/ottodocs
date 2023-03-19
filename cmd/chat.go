@@ -55,7 +55,7 @@ If '-q' is not specified, the user will be prompted to enter a question.
 }
 
 func init() {
-	rootCmd.AddCommand(chatCmd)
+	RootCmd.AddCommand(chatCmd)
 
 	chatCmd.Flags().StringVarP(&question, "question", "q", "", "Question to chat ChatGPT")
 }

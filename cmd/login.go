@@ -42,7 +42,7 @@ This API key will be used to authenticate with the OpenAI ChatGPT API.`,
 }
 
 func init() {
-	rootCmd.AddCommand(loginCmd)
+	RootCmd.AddCommand(loginCmd)
 
 	loginCmd.Flags().StringVarP(&apiKey, "apikey", "k", "", "API key to add to configuration")
 }

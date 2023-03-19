@@ -78,7 +78,7 @@ var promptCmd = &cobra.Command{
 }
 
 func init() {
-	rootCmd.AddCommand(promptCmd)
+	RootCmd.AddCommand(promptCmd)
 
 	// see cmd/vars.go for the definition of these flags
 	promptCmd.Flags().StringVarP(&preambleFile, "preamble", "p", "", "path to preamble text file")

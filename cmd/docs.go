@@ -135,7 +135,7 @@ search for files in the directory and document them.
 }
 
 func init() {
-	rootCmd.AddCommand(docsCmd)
+	RootCmd.AddCommand(docsCmd)
 
 	// see cmd/vars for the definition of these flags
 	docsCmd.Flags().StringVarP(&chatPrompt, "prompt", "p", "", "Prompt to use for the ChatGPT API")

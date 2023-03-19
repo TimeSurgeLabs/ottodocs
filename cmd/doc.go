@@ -79,7 +79,7 @@ var docCmd = &cobra.Command{
 }
 
 func init() {
-	rootCmd.AddCommand(docCmd)
+	RootCmd.AddCommand(docCmd)
 
 	// see cmd/vars.go for the definition of these flags
 	docCmd.Flags().StringVarP(&filePath, "file", "f", "", "The file to document")
