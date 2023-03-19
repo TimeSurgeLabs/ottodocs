@@ -1,2 +1,4 @@
 .vscode/**
 LICENSE
+go.mod
+go.sum
