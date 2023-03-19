@@ -2,3 +2,4 @@
 LICENSE
 go.mod
 go.sum
+docs/**
