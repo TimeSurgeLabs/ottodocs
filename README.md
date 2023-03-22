@@ -1,14 +1,14 @@
-# ottodocs
+# OttoDocs 🦦
 
 [![License: AGPL v3](https://img.shields.io/badge/License-AGPL%20v3-blue.svg)](https://www.gnu.org/licenses/agpl-3.0)
 
-`ottodocs` is a command-line tool written in Go that uses GPT-3 (and GPT-4 once the API is available) to automatically generate or add inline and markdown documentation for your code. It can parse a git repository or an individual file and create markdown documentation or add inline comments. The tool requires an [OpenAI API key](https://platform.openai.com/account/api-keys) to function.
+OttoDocs is a command-line tool written in Go that uses GPT-3 (and GPT-4 once the API is available) to automatically generate or add inline and markdown documentation for your code. It can parse a git repository or an individual file and create markdown documentation or add inline comments. The tool requires an [OpenAI API key](https://platform.openai.com/account/api-keys) to function.
 
-`ottodocs` utilizes the `just` command runner for building and running tasks, making it easy to use and maintain.
+OttoDocs utilizes the `just` command runner for building and running tasks, making maintaining the project easier. If you do not have `just` installed, see [here](https://just.systems/man/en/chapter_5.html) for installation methods.
 
 ## Installation
 
-There are two methods to install `ottodocs` :
+There are two methods to install OttoDocs:
 
 1. **Precompiled binaries:** Download the precompiled binaries from the [GitHub releases tab](https://github.com/chand1012/ottodocs/releases).
 2. **Build from source:** Clone the repo and build the binary by running the following commands:
@@ -16,8 +16,18 @@ There are two methods to install `ottodocs` :
 ```sh
 git clone https://github.com/chand1012/ottodocs.git
 cd ottodocs
-just build # will output binary to bin/otto. Copy the file to a directory in your PATH
+just build # will build to bin/ottodocs
+# or
+just install # will build & copy to $GOPATH/bin. 
 ```
+
+If you want to build for all supported platforms, you can run the following command:
+
+```sh
+just crossbuild
+```
+
+This will build and compress binaries for all supported platforms and place them in the `dist` directory.
 
 ## Getting Started
 
@@ -32,7 +42,7 @@ otto login
 Optionally you can pass the API key as an argument to the command:
 
 ```sh
-otto login -p $OPENAI_API_KEY
+otto login --apikey $OPENAI_API_KEY
 ```
 
 Once that is complete, you can start generating documentation by running the following command:
