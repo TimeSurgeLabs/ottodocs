@@ -2,7 +2,7 @@
 
 [![License: AGPL v3](https://img.shields.io/badge/License-AGPL%20v3-blue.svg)](https://www.gnu.org/licenses/agpl-3.0)
 
-`ottodocs` is a command-line tool written in Go that uses GPT-3 to automatically generate or add inline documentation for your code. It can parse a git repository or an individual file and create markdown documentation or add inline comments. The tool requires an OpenAI API key to function.
+`ottodocs` is a command-line tool written in Go that uses GPT-3 (and GPT-4 once the API is available) to automatically generate or add inline and markdown documentation for your code. It can parse a git repository or an individual file and create markdown documentation or add inline comments. The tool requires an [OpenAI API key](https://platform.openai.com/account/api-keys) to function.
 
 `ottodocs` utilizes the `just` command runner for building and running tasks, making it easy to use and maintain.
 
@@ -17,6 +17,34 @@ There are two methods to install `ottodocs` :
 git clone https://github.com/chand1012/ottodocs.git
 cd ottodocs
 just build # will output binary to bin/otto. Copy the file to a directory in your PATH
+```
+
+## Getting Started
+
+First, you need to create an OpenAI API Key. If you do not already have an OpenAI account, you can create a new one and get some free credits to try it out. Once you have an account, you can create an API key by going to the [API Keys tab](https://platform.openai.com/account/api-keys) in your account settings.
+
+Once you have an API key, you can log in to ottodocs by running the following command:
+
+```sh
+otto login
+```
+
+Optionally you can pass the API key as an argument to the command:
+
+```sh
+otto login -p $OPENAI_API_KEY
+```
+
+Once that is complete, you can start generating documentation by running the following command:
+
+```sh
+otto docs <path to repo or file>
+```
+
+Or for a single file, you can run:
+
+```sh
+otto doc -f <path to file>
 ```
 
 ## Usage
