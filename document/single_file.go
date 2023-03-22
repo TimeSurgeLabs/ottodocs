@@ -14,7 +14,7 @@ import (
 	"github.com/pandodao/tokenizer-go"
 
 	"github.com/chand1012/ottodocs/constants"
-	"github.com/chand1012/ottodocs/textfile"
+	"github.com/chand1012/ottodocs/utils/textfile"
 )
 
 func extractLineNumber(line string) (int, error) {

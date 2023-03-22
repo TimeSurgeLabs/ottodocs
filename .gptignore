@@ -3,3 +3,5 @@ LICENSE
 go.mod
 go.sum
 docs/**
+Justfile
+README.md
