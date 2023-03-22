@@ -1,4 +1,3 @@
 ottodocs
 bin/**
-*.zip
-*.tar.gz
+dist/**
