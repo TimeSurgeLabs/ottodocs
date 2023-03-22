@@ -90,3 +90,19 @@ func (c *Config) Save() error {
 
 	return json.NewEncoder(file).Encode(c)
 }
+
+// Identical save function except that it takes the config object as its argument
+func Save(c *Config) error {
+	configPath, err := createIfNotExists()
+	if err != nil {
+		return err
+	}
+
+	// open the config file
+	file, err := os.OpenFile(configPath, os.O_WRONLY, 0644)
+	if err != nil {
+		return err
+	}
+
+	return json.NewEncoder(file).Encode(c)
+}
