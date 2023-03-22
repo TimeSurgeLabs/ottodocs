@@ -26,4 +26,5 @@ var CommentOperators = map[string]string{
 	".asm":   ";",    // Assembly
 	".html":  "<!--", // HTML (Opening Comment)
 	".css":   "/*",   // CSS (Opening Comment)
+	".sol":   "//",   // Solidity
 }
