@@ -8,9 +8,9 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/chand1012/git2gpt/prompt"
 	"github.com/chand1012/ottodocs/ai"
 	"github.com/chand1012/ottodocs/config"
+	"github.com/chand1012/ottodocs/utils"
 	"github.com/spf13/cobra"
 )
 
@@ -61,9 +61,7 @@ search for files in the directory and document them.
 			os.Exit(1)
 		}
 
-		ignoreList := prompt.GenerateIgnoreList(repoPath, ignoreFilePath, !ignoreGitignore)
-		ignoreList = append(ignoreList, filepath.Join(repoPath, ".gptignore"))
-		repo, err := prompt.ProcessGitRepo(repoPath, ignoreList)
+		repo, err := utils.GetRepo(repoPath, ignoreFilePath, ignoreGitignore)
 		if err != nil {
 			log.Errorf("Error: %s", err)
 			os.Exit(1)
@@ -82,10 +80,16 @@ search for files in the directory and document them.
 				chatPrompt = "Write documentation for the following code snippet. The file name is" + file.Path + ":"
 			}
 
+			fileContents, err := utils.LoadFile(path)
+			if err != nil {
+				log.Warnf("Error loading file %s: %s", path, err)
+				continue
+			}
+
 			if inlineMode || !markdownMode {
-				contents, err = ai.SingleFile(path, chatPrompt, conf.APIKey)
+				contents, err = ai.SingleFile(path, fileContents, chatPrompt, conf.APIKey)
 			} else {
-				contents, err = ai.Markdown(path, chatPrompt, conf.APIKey)
+				contents, err = ai.Markdown(path, fileContents, chatPrompt, conf.APIKey)
 			}
 
 			if err != nil {

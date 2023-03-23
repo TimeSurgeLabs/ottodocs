@@ -7,7 +7,6 @@ import (
 	gopenai "github.com/CasualCodersProjects/gopenai"
 	ai_types "github.com/CasualCodersProjects/gopenai/types"
 	"github.com/chand1012/ottodocs/constants"
-	"github.com/pandodao/tokenizer-go"
 )
 
 func Question(filePath, fileContent, chatPrompt, APIKey string) (string, error) {
@@ -28,7 +27,10 @@ func Question(filePath, fileContent, chatPrompt, APIKey string) (string, error) 
 		},
 	}
 
-	tokens := tokenizer.MustCalToken(messages[0].Content) + tokenizer.MustCalToken(messages[1].Content)
+	tokens, err := CalcTokens(messages[0].Content, messages[1].Content)
+	if err != nil {
+		return "", fmt.Errorf("could not calculate tokens: %s", err)
+	}
 
 	maxTokens := constants.OPENAI_MAX_TOKENS - tokens
 

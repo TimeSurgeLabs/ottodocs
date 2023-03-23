@@ -11,6 +11,7 @@ import (
 
 	"github.com/chand1012/ottodocs/ai"
 	"github.com/chand1012/ottodocs/config"
+	"github.com/chand1012/ottodocs/utils"
 )
 
 // docCmd represents the doc command
@@ -39,10 +40,16 @@ var docCmd = &cobra.Command{
 
 		var contents string
 
+		fileContents, err := utils.LoadFile(filePath)
+		if err != nil {
+			log.Errorf("Error: %s", err)
+			os.Exit(1)
+		}
+
 		if inlineMode || !markdownMode {
-			contents, err = ai.SingleFile(filePath, chatPrompt, conf.APIKey)
+			contents, err = ai.SingleFile(filePath, fileContents, chatPrompt, conf.APIKey)
 		} else {
-			contents, err = ai.Markdown(filePath, chatPrompt, conf.APIKey)
+			contents, err = ai.Markdown(filePath, fileContents, chatPrompt, conf.APIKey)
 		}
 
 		if err != nil {

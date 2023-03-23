@@ -1,34 +1,20 @@
 package ai
 
 import (
-	"errors"
 	"fmt"
-	"os"
 	"strings"
-	"unicode/utf8"
 
 	gopenai "github.com/CasualCodersProjects/gopenai"
 	ai_types "github.com/CasualCodersProjects/gopenai/types"
 	"github.com/chand1012/ottodocs/constants"
-	"github.com/pandodao/tokenizer-go"
 )
 
-func Markdown(filePath, chatPrompt, APIKey string) (string, error) {
+func Markdown(filePath, contents, chatPrompt, APIKey string) (string, error) {
 	openai := gopenai.NewOpenAI(&gopenai.OpenAIOpts{
 		APIKey: APIKey,
 	})
 
-	// load the file
-	contents, err := os.ReadFile(filePath)
-	if err != nil {
-		return "", err
-	}
-
-	if !utf8.Valid(contents) {
-		return "", errors.New("the file is not valid UTF-8")
-	}
-
-	question := chatPrompt + "\n\n" + strings.TrimRight(string(contents), " \n")
+	question := chatPrompt + "\n\n" + strings.TrimRight(contents, " \n")
 
 	messages := []ai_types.ChatMessage{
 		{
@@ -41,7 +27,10 @@ func Markdown(filePath, chatPrompt, APIKey string) (string, error) {
 		},
 	}
 
-	tokens := tokenizer.MustCalToken(messages[0].Content) + tokenizer.MustCalToken(messages[1].Content)
+	tokens, err := CalcTokens(messages[0].Content, messages[1].Content)
+	if err != nil {
+		return "", fmt.Errorf("could not calculate tokens: %s", err)
+	}
 
 	maxTokens := constants.OPENAI_MAX_TOKENS - tokens
 

@@ -1,17 +1,13 @@
 package ai
 
 import (
-	"errors"
 	"fmt"
-	"os"
 	"path/filepath"
 	"strconv"
 	"strings"
-	"unicode/utf8"
 
 	gopenai "github.com/CasualCodersProjects/gopenai"
 	ai_types "github.com/CasualCodersProjects/gopenai/types"
-	"github.com/pandodao/tokenizer-go"
 
 	"github.com/chand1012/ottodocs/constants"
 	"github.com/chand1012/ottodocs/utils/textfile"
@@ -38,21 +34,11 @@ func extractLineNumber(line string) (int, error) {
 }
 
 // Document a file using the OpenAI ChatGPT API. Takes a file path, a prompt, and an API key as arguments.
-func SingleFile(filePath, chatPrompt, APIKey string) (string, error) {
+func SingleFile(filePath, contents, chatPrompt, APIKey string) (string, error) {
 
 	openai := gopenai.NewOpenAI(&gopenai.OpenAIOpts{
 		APIKey: APIKey,
 	})
-
-	// load the file
-	contents, err := os.ReadFile(filePath)
-	if err != nil {
-		return "", err
-	}
-
-	if !utf8.Valid(contents) {
-		return "", errors.New("the file is not valid UTF-8")
-	}
 
 	fileEnding := filepath.Ext(filePath)
 
@@ -61,7 +47,7 @@ func SingleFile(filePath, chatPrompt, APIKey string) (string, error) {
 		return "", fmt.Errorf("the file type %s is not supported", fileEnding)
 	}
 
-	question := chatPrompt + "\n\n" + strings.TrimRight(string(contents), " \n")
+	question := chatPrompt + "\n\n" + strings.TrimRight(contents, " \n")
 
 	messages := []ai_types.ChatMessage{
 		{
@@ -74,7 +60,10 @@ func SingleFile(filePath, chatPrompt, APIKey string) (string, error) {
 		},
 	}
 
-	tokens := tokenizer.MustCalToken(messages[0].Content) + tokenizer.MustCalToken(messages[1].Content)
+	tokens, err := CalcTokens(messages[0].Content, messages[1].Content)
+	if err != nil {
+		return "", fmt.Errorf("could not calculate tokens: %s", err)
+	}
 
 	maxTokens := constants.OPENAI_MAX_TOKENS - tokens
 
