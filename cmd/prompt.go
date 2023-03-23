@@ -28,24 +28,24 @@ var promptCmd = &cobra.Command{
 		ignoreList := prompt.GenerateIgnoreList(repoPath, ignoreFilePath, !ignoreGitignore)
 		repo, err := prompt.ProcessGitRepo(repoPath, ignoreList)
 		if err != nil {
-			fmt.Printf("Error: %s\n", err)
+			log.Errorf("Error: %s", err)
 			os.Exit(1)
 		}
 		if outputJSON {
 			output, err := prompt.MarshalRepo(repo)
 			if err != nil {
-				fmt.Printf("Error: %s\n", err)
+				log.Errorf("Error: %s", err)
 				os.Exit(1)
 			}
 			if outputFile != "" {
 				// if output file exists, throw error
 				if _, err := os.Stat(outputFile); err == nil {
-					fmt.Printf("Error: output file %s already exists\n", outputFile)
+					log.Errorf("Error: output file %s already exists", outputFile)
 					os.Exit(1)
 				}
 				err = os.WriteFile(outputFile, []byte(output), 0644)
 				if err != nil {
-					fmt.Printf("Error: could not write to output file %s\n", outputFile)
+					log.Errorf("Error: could not write to output file %s", outputFile)
 					os.Exit(1)
 				}
 			} else {
@@ -55,18 +55,18 @@ var promptCmd = &cobra.Command{
 		}
 		output, err := prompt.OutputGitRepo(repo, preambleFile)
 		if err != nil {
-			fmt.Printf("Error: %s\n", err)
+			log.Errorf("Error: %s", err)
 			os.Exit(1)
 		}
 		if outputFile != "" {
 			// if output file exists, throw error
 			if _, err := os.Stat(outputFile); err == nil {
-				fmt.Printf("Error: output file %s already exists\n", outputFile)
+				log.Errorf("Error: output file %s already exists", outputFile)
 				os.Exit(1)
 			}
 			err = os.WriteFile(outputFile, []byte(output), 0644)
 			if err != nil {
-				fmt.Printf("Error: could not write to output file %s\n", outputFile)
+				log.Errorf("Error: could not write to output file %s", outputFile)
 				os.Exit(1)
 			}
 		} else {

@@ -1,4 +1,4 @@
-package document
+package ai
 
 import (
 	"errors"
@@ -92,7 +92,7 @@ func SingleFile(filePath, chatPrompt, APIKey string) (string, error) {
 	resp, err := openai.CreateChat(req)
 	if err != nil {
 		fmt.Printf("Error: %s", err)
-		os.Exit(1)
+		return "", err
 	}
 
 	message := resp.Choices[0].Message.Content

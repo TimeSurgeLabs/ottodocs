@@ -1,3 +1,4 @@
 ottodocs
 bin/**
 dist/**
+*.bleve

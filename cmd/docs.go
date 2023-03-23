@@ -9,8 +9,8 @@ import (
 	"path/filepath"
 
 	"github.com/chand1012/git2gpt/prompt"
+	"github.com/chand1012/ottodocs/ai"
 	"github.com/chand1012/ottodocs/config"
-	"github.com/chand1012/ottodocs/document"
 	"github.com/spf13/cobra"
 )
 
@@ -31,24 +31,24 @@ search for files in the directory and document them.
 		repoPath = args[0]
 
 		if (!markdownMode || inlineMode) && outputFile != "" {
-			fmt.Println("Error: cannot specify an output file in inline mode")
+			log.Error("Error: cannot specify an output file in inline mode")
 			os.Exit(1)
 		}
 
 		if markdownMode && overwriteOriginal {
-			fmt.Println("Error: cannot overwrite original file in markdown mode")
+			log.Error("Error: cannot overwrite original file in markdown mode")
 			os.Exit(1)
 		}
 
 		if markdownMode && outputFile == "" {
-			fmt.Println("Error: must specify an output file in markdown mode")
+			log.Error("Error: must specify an output file in markdown mode")
 			os.Exit(1)
 		}
 
 		if outputFile != "" {
 			// if output file exists, throw error
 			if _, err := os.Stat(outputFile); err == nil {
-				fmt.Printf("Error: output file %s already exists!\n", outputFile)
+				log.Errorf("Error: output file %s already exists!", outputFile)
 				os.Exit(1)
 			}
 		}
@@ -56,16 +56,16 @@ search for files in the directory and document them.
 		conf, err := config.Load()
 		if err != nil || conf.APIKey == "" {
 			// if the API key is not set, prompt the user to login
-			fmt.Println("Please login first.")
-			fmt.Println("Run `ottodocs login` to login.")
+			log.Error("Please login first.")
+			log.Error("Run `ottodocs login` to login.")
 			os.Exit(1)
 		}
 
-		ignoreList := prompt.GenerateIgnoreList(ignoreFilePath, ignoreFilePath, !ignoreGitignore)
+		ignoreList := prompt.GenerateIgnoreList(repoPath, ignoreFilePath, !ignoreGitignore)
 		ignoreList = append(ignoreList, filepath.Join(repoPath, ".gptignore"))
 		repo, err := prompt.ProcessGitRepo(repoPath, ignoreList)
 		if err != nil {
-			fmt.Printf("Error: %s", err)
+			log.Errorf("Error: %s", err)
 			os.Exit(1)
 		}
 
@@ -83,13 +83,13 @@ search for files in the directory and document them.
 			}
 
 			if inlineMode || !markdownMode {
-				contents, err = document.SingleFile(path, chatPrompt, conf.APIKey)
+				contents, err = ai.SingleFile(path, chatPrompt, conf.APIKey)
 			} else {
-				contents, err = document.Markdown(path, chatPrompt, conf.APIKey)
+				contents, err = ai.Markdown(path, chatPrompt, conf.APIKey)
 			}
 
 			if err != nil {
-				fmt.Printf("Error documenting file %s: %s\n", path, err)
+				log.Warnf("Error documenting file %s: %s", path, err)
 				continue
 			}
 
@@ -98,13 +98,13 @@ search for files in the directory and document them.
 				// append if the file already exists
 				file, err := os.OpenFile(outputFile, os.O_WRONLY|os.O_CREATE|os.O_APPEND, 0644)
 				if err != nil {
-					fmt.Printf("Error: %s\n", err)
+					log.Errorf("Error: %s", err)
 					os.Exit(1)
 				}
 
 				_, err = file.WriteString(contents)
 				if err != nil {
-					fmt.Printf("Error: %s\n", err)
+					log.Errorf("Error: %s", err)
 					os.Exit(1)
 				}
 
@@ -114,14 +114,14 @@ search for files in the directory and document them.
 				// clear the contents of the file
 				file, err := os.OpenFile(filePath, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0644)
 				if err != nil {
-					fmt.Printf("Error: %s\n", err)
+					log.Errorf("Error: %s", err)
 					os.Exit(1)
 				}
 
 				// write the new contents to the file
 				_, err = file.WriteString(contents)
 				if err != nil {
-					fmt.Printf("Error: %s\n", err)
+					log.Errorf("Error: %s", err)
 					os.Exit(1)
 				}
 

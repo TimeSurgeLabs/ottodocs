@@ -28,13 +28,13 @@ This API key will be used to authenticate with the OpenAI ChatGPT API.`,
 		// save the API key to a configuration file at ~/.ottodocs/config.json
 		conf, err := config.Load()
 		if err != nil {
-			fmt.Printf("Error: %s", err)
+			log.Errorf("Error: %s", err)
 			os.Exit(1)
 		}
 		conf.APIKey = apiKey
 		err = conf.Save()
 		if err != nil {
-			fmt.Printf("Error: %s", err)
+			log.Errorf("Error: %s", err)
 			os.Exit(1)
 		}
 		fmt.Println("API key saved successfully!")

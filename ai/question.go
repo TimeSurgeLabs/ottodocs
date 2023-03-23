@@ -1,11 +1,8 @@
-package document
+package ai
 
 import (
-	"errors"
 	"fmt"
-	"os"
 	"strings"
-	"unicode/utf8"
 
 	gopenai "github.com/CasualCodersProjects/gopenai"
 	ai_types "github.com/CasualCodersProjects/gopenai/types"
@@ -13,26 +10,16 @@ import (
 	"github.com/pandodao/tokenizer-go"
 )
 
-func Markdown(filePath, chatPrompt, APIKey string) (string, error) {
+func Question(filePath, fileContent, chatPrompt, APIKey string) (string, error) {
 	openai := gopenai.NewOpenAI(&gopenai.OpenAIOpts{
 		APIKey: APIKey,
 	})
 
-	// load the file
-	contents, err := os.ReadFile(filePath)
-	if err != nil {
-		return "", err
-	}
-
-	if !utf8.Valid(contents) {
-		return "", errors.New("the file is not valid UTF-8")
-	}
-
-	question := chatPrompt + "\n\n" + strings.TrimRight(string(contents), " \n")
+	question := "File Name: " + filePath + "\nQuestion: " + chatPrompt + "\n\n" + strings.TrimRight(string(fileContent), " \n") + "\nAnswer:"
 
 	messages := []ai_types.ChatMessage{
 		{
-			Content: constants.DOCUMENT_MARKDOWN_PROMPT,
+			Content: constants.QUESTION_PROMPT,
 			Role:    "system",
 		},
 		{
@@ -55,9 +42,9 @@ func Markdown(filePath, chatPrompt, APIKey string) (string, error) {
 	// lower the temperature to make the model more deterministic
 	// req.Temperature = 0.3
 
-	// ask ChatGPT the question
 	resp, err := openai.CreateChat(req)
 	if err != nil {
+		fmt.Printf("Error: %s", err)
 		return "", err
 	}
 

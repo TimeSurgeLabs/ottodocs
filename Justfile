@@ -8,7 +8,7 @@ build:
   go build -v -o bin/otto
 
 clean:
-  rm -f otto
+  rm -rf bin dist
 
 run *commands:
   go run main.go {{commands}}

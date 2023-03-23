@@ -9,8 +9,8 @@ import (
 
 	"github.com/spf13/cobra"
 
+	"github.com/chand1012/ottodocs/ai"
 	"github.com/chand1012/ottodocs/config"
-	"github.com/chand1012/ottodocs/document"
 )
 
 // docCmd represents the doc command
@@ -20,8 +20,8 @@ var docCmd = &cobra.Command{
 	Long:  `Document a file using the OpenAI ChatGPT API.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		if filePath == "" {
-			fmt.Println("Please provide a path to a file to document.")
-			fmt.Println("Run `ottodocs doc -h` for more information.")
+			log.Error("Please provide a path to a file to document.")
+			log.Error("Run `ottodocs doc -h` for more information.")
 			os.Exit(1)
 		}
 
@@ -32,21 +32,21 @@ var docCmd = &cobra.Command{
 		conf, err := config.Load()
 		if err != nil || conf.APIKey == "" {
 			// if the API key is not set, prompt the user to login
-			fmt.Println("Please login first.")
-			fmt.Println("Run `ottodocs login` to login.")
+			log.Error("Please login first.")
+			log.Error("Run `ottodocs login` to login.")
 			os.Exit(1)
 		}
 
 		var contents string
 
 		if inlineMode || !markdownMode {
-			contents, err = document.SingleFile(filePath, chatPrompt, conf.APIKey)
+			contents, err = ai.SingleFile(filePath, chatPrompt, conf.APIKey)
 		} else {
-			contents, err = document.Markdown(filePath, chatPrompt, conf.APIKey)
+			contents, err = ai.Markdown(filePath, chatPrompt, conf.APIKey)
 		}
 
 		if err != nil {
-			fmt.Printf("Error: %s", err)
+			log.Errorf("Error: %s", err)
 			os.Exit(1)
 		}
 
@@ -54,7 +54,7 @@ var docCmd = &cobra.Command{
 			// write the string to the output file
 			err = os.WriteFile(outputFile, []byte(contents), 0644)
 			if err != nil {
-				fmt.Printf("Error: %s", err)
+				log.Errorf("Error: %s", err)
 				os.Exit(1)
 			}
 		} else if overwriteOriginal {
@@ -62,14 +62,14 @@ var docCmd = &cobra.Command{
 			// clear the contents of the file
 			file, err := os.OpenFile(filePath, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0644)
 			if err != nil {
-				fmt.Printf("Error: %s", err)
+				log.Errorf("Error: %s", err)
 				os.Exit(1)
 			}
 
 			// write the new contents to the file
 			_, err = file.WriteString(contents)
 			if err != nil {
-				fmt.Printf("Error: %s", err)
+				log.Errorf("Error: %s", err)
 				os.Exit(1)
 			}
 		} else {

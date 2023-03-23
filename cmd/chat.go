@@ -26,8 +26,8 @@ If '-q' is not specified, the user will be prompted to enter a question.
 		conf, err := config.Load()
 		if err != nil || conf.APIKey == "" {
 			// if the API key is not set, prompt the user to login
-			fmt.Println("Please login first.")
-			fmt.Println("Run `ottodocs login` to login.")
+			log.Error("Please login first.")
+			log.Error("Run `ottodocs login` to login.")
 			os.Exit(1)
 		}
 
@@ -44,7 +44,7 @@ If '-q' is not specified, the user will be prompted to enter a question.
 		// chat ChatGPT the question
 		resp, err := openai.CreateChatSimple(question, 0) // 0 sets the max tokens to 1024
 		if err != nil {
-			fmt.Printf("Error: %s", err)
+			log.Errorf("Error: %s", err)
 			os.Exit(1)
 		}
 
