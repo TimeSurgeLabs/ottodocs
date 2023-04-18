@@ -16,7 +16,7 @@ There are two methods to install OttoDocs:
 ```sh
 git clone https://github.com/chand1012/ottodocs.git
 cd ottodocs
-just build # will build to bin/ottodocs
+just build # will build to bin/otto
 # or
 just install # will build & copy to $GOPATH/bin. 
 ```
