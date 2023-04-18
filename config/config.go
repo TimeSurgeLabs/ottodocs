@@ -10,6 +10,7 @@ import (
 // Config represents the configuration file
 type Config struct {
 	APIKey string `json:"api_key"`
+	Model  string `json:"model"`
 }
 
 // also returns the path to the config file
@@ -39,7 +40,10 @@ func createIfNotExists() (string, error) {
 			return "", err
 		}
 		// add an empty config to the file
-		blankConfig := Config{}
+		blankConfig := Config{
+			APIKey: "",
+			Model:  "gpt-3.5-turbo",
+		}
 		err = json.NewEncoder(file).Encode(blankConfig)
 		if err != nil {
 			return "", err

@@ -9,7 +9,7 @@ import (
 	"github.com/chand1012/ottodocs/constants"
 )
 
-func Markdown(filePath, contents, chatPrompt, APIKey string) (string, error) {
+func Markdown(filePath, contents, chatPrompt, APIKey, model string) (string, error) {
 	openai := gopenai.NewOpenAI(&gopenai.OpenAIOpts{
 		APIKey: APIKey,
 	})
@@ -41,6 +41,7 @@ func Markdown(filePath, contents, chatPrompt, APIKey string) (string, error) {
 	req := ai_types.NewDefaultChatRequest("")
 	req.Messages = messages
 	req.MaxTokens = maxTokens
+	req.Model = model
 	// lower the temperature to make the model more deterministic
 	// req.Temperature = 0.3
 

@@ -87,9 +87,9 @@ search for files in the directory and document them.
 			}
 
 			if inlineMode || !markdownMode {
-				contents, err = ai.SingleFile(path, fileContents, chatPrompt, conf.APIKey)
+				contents, err = ai.SingleFile(path, fileContents, chatPrompt, conf.APIKey, conf.Model)
 			} else {
-				contents, err = ai.Markdown(path, fileContents, chatPrompt, conf.APIKey)
+				contents, err = ai.Markdown(path, fileContents, chatPrompt, conf.APIKey, conf.Model)
 			}
 
 			if err != nil {

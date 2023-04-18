@@ -135,7 +135,7 @@ Requires a path to a repository or file as a positional argument.`,
 			os.Exit(1)
 		}
 
-		resp, err := ai.Question(fileName, content, chatPrompt, conf.APIKey)
+		resp, err := ai.Question(fileName, content, chatPrompt, conf.APIKey, conf.Model)
 
 		if err != nil {
 			log.Errorf("Error asking question: %s", err)

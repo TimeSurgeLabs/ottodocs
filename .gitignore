@@ -2,3 +2,4 @@ ottodocs
 bin/**
 dist/**
 *.bleve
+**.DS_Store**

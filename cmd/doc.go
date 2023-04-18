@@ -47,9 +47,9 @@ var docCmd = &cobra.Command{
 		}
 
 		if inlineMode || !markdownMode {
-			contents, err = ai.SingleFile(filePath, fileContents, chatPrompt, conf.APIKey)
+			contents, err = ai.SingleFile(filePath, fileContents, chatPrompt, conf.APIKey, conf.Model)
 		} else {
-			contents, err = ai.Markdown(filePath, fileContents, chatPrompt, conf.APIKey)
+			contents, err = ai.Markdown(filePath, fileContents, chatPrompt, conf.APIKey, conf.Model)
 		}
 
 		if err != nil {
