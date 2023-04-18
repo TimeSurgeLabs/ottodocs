@@ -5,10 +5,10 @@ go 1.20
 require (
 	github.com/CasualCodersProjects/gopenai v0.3.0
 	github.com/blevesearch/bleve/v2 v2.3.7
-	github.com/chand1012/git2gpt v0.3.0
+	github.com/chand1012/git2gpt v0.4.0
 	github.com/charmbracelet/log v0.2.1
 	github.com/pandodao/tokenizer-go v0.1.0
-	github.com/spf13/cobra v1.6.1
+	github.com/spf13/cobra v1.7.0
 )
 
 require (
@@ -42,7 +42,7 @@ require (
 	github.com/golang/protobuf v1.3.2 // indirect
 	github.com/golang/snappy v0.0.1 // indirect
 	github.com/google/pprof v0.0.0-20230309165930-d61513b1440d // indirect
-	github.com/inconshreveable/mousetrap v1.0.1 // indirect
+	github.com/inconshreveable/mousetrap v1.1.0 // indirect
 	github.com/json-iterator/go v0.0.0-20171115153421-f7279a603ede // indirect
 	github.com/lucasb-eyer/go-colorful v1.2.0 // indirect
 	github.com/mattn/go-isatty v0.0.18 // indirect
