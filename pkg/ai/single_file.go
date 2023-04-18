@@ -9,8 +9,8 @@ import (
 	gopenai "github.com/CasualCodersProjects/gopenai"
 	ai_types "github.com/CasualCodersProjects/gopenai/types"
 
-	"github.com/chand1012/ottodocs/constants"
-	"github.com/chand1012/ottodocs/utils/textfile"
+	"github.com/chand1012/ottodocs/pkg/constants"
+	"github.com/chand1012/ottodocs/pkg/utils/textfile"
 )
 
 func extractLineNumber(line string) (int, error) {

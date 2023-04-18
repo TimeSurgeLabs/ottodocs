@@ -8,9 +8,9 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/chand1012/ottodocs/ai"
-	"github.com/chand1012/ottodocs/config"
-	"github.com/chand1012/ottodocs/utils"
+	"github.com/chand1012/ottodocs/pkg/ai"
+	"github.com/chand1012/ottodocs/pkg/config"
+	"github.com/chand1012/ottodocs/pkg/utils"
 	"github.com/spf13/cobra"
 )
 

@@ -6,8 +6,8 @@ package cmd
 import (
 	"github.com/spf13/cobra"
 
-	"github.com/chand1012/ottodocs/config"
-	"github.com/chand1012/ottodocs/utils"
+	"github.com/chand1012/ottodocs/pkg/config"
+	"github.com/chand1012/ottodocs/pkg/utils"
 )
 
 var VALID_MODELS = []string{"gpt-4", "gpt-4-0314", "gpt-4-32k", "gpt-4-32k-0314", "gpt-3.5-turbo", "gpt-3.5-turbo-0301"}

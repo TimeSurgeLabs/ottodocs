@@ -6,7 +6,7 @@ import (
 
 	gopenai "github.com/CasualCodersProjects/gopenai"
 	ai_types "github.com/CasualCodersProjects/gopenai/types"
-	"github.com/chand1012/ottodocs/constants"
+	"github.com/chand1012/ottodocs/pkg/constants"
 )
 
 func Question(filePath, fileContent, chatPrompt, APIKey, model string) (string, error) {

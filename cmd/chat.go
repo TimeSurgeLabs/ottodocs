@@ -8,7 +8,7 @@ import (
 	"os"
 
 	gopenai "github.com/CasualCodersProjects/gopenai"
-	"github.com/chand1012/ottodocs/config"
+	"github.com/chand1012/ottodocs/pkg/config"
 	"github.com/spf13/cobra"
 )
 
