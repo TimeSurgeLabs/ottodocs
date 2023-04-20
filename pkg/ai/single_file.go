@@ -9,8 +9,9 @@ import (
 	gopenai "github.com/CasualCodersProjects/gopenai"
 	ai_types "github.com/CasualCodersProjects/gopenai/types"
 
+	"github.com/chand1012/ottodocs/pkg/calc"
 	"github.com/chand1012/ottodocs/pkg/constants"
-	"github.com/chand1012/ottodocs/pkg/utils/textfile"
+	"github.com/chand1012/ottodocs/pkg/textfile"
 )
 
 func extractLineNumber(line string) (int, error) {
@@ -60,7 +61,7 @@ func SingleFile(filePath, contents, chatPrompt, APIKey, model string) (string, e
 		},
 	}
 
-	tokens, err := CalcTokens(messages[0].Content, messages[1].Content)
+	tokens, err := calc.PreciseTokens(messages[0].Content, messages[1].Content)
 	if err != nil {
 		return "", fmt.Errorf("could not calculate tokens: %s", err)
 	}

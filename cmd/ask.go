@@ -9,7 +9,7 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/blevesearch/bleve/v2"
+	"github.com/chand1012/memory"
 	"github.com/spf13/cobra"
 
 	"github.com/chand1012/ottodocs/pkg/ai"
@@ -55,19 +55,16 @@ Requires a path to a repository or file as a positional argument.`,
 		// check if the first arg is a file or a directory
 		// if it's a file, ask a question about that file directly
 		if info.IsDir() {
-			var index bleve.Index
-			var err error
-			mapping := bleve.NewIndexMapping()
+			// Define a temporary path for the index file
+			testIndexPath := filepath.Join(args[0], ".index.memory")
 
-			// check if .index.bleve exists
-			// if it does, load it
-			// if it doesn't, create it
-			// fmt.Println("Indexing repo...")
-			index, err = bleve.New(filepath.Join(args[0], ".index.bleve"), mapping)
+			// Create a new memory index
+			m, _, err := memory.New(testIndexPath)
 			if err != nil {
-				log.Errorf("Error creating index: %s", err)
+				log.Errorf("Failed to create memory index: %s", err)
 				os.Exit(1)
 			}
+
 			// index the repo
 			repo, err := utils.GetRepo(repoPath, ignoreFilePath, ignoreGitignore)
 			if err != nil {
@@ -77,52 +74,25 @@ Requires a path to a repository or file as a positional argument.`,
 
 			// index the files
 			for _, file := range repo.Files {
-				err = index.Index(file.Path, file)
+				err = m.Add(file.Path, file.Contents)
 				if err != nil {
 					log.Errorf("Error indexing file: %s", err)
 					os.Exit(1)
 				}
 			}
 
-			// ask a question about the repo
-			query := bleve.NewQueryStringQuery(chatPrompt)
-			search := bleve.NewSearchRequest(query)
-			searchResults, err := index.Search(search)
+			// search the memory index
+			results, err := m.Search(chatPrompt)
 			if err != nil {
-				log.Errorf("Error searching index: %s", err)
+				log.Errorf("Failed to search memory index: %s", err)
 				os.Exit(1)
 			}
 
-			// tokenize the question
-			tokens := utils.SimpleTokenize(chatPrompt)
-			for _, token := range tokens {
-				query := bleve.NewQueryStringQuery(token)
-				search := bleve.NewSearchRequest(query)
-				r, err := index.Search(search)
-				if err != nil {
-					log.Errorf("Error searching index: %s", err)
-					os.Exit(1)
-				}
-				// combines the searches, but doesn't weight by ID
-				searchResults.Merge(r)
-			}
-			hits := make(map[string]float64)
+			m.Destroy()
 
-			for _, results := range searchResults.Hits {
-				currentScore := hits[results.ID]
-				hits[results.ID] = currentScore + results.Score
-			}
-
-			var bestHit string
-			var bestScore float64
-			for hit, score := range hits {
-				if score > bestScore {
-					bestScore = score
-					bestHit = hit
-				}
-			}
-
-			fileName = bestHit
+			// get the top fragment by average score
+			top := memory.TopFragmentAvg(results)
+			fileName = top.ID
 		} else {
 			fileName = repoPath
 		}
@@ -143,15 +113,6 @@ Requires a path to a repository or file as a positional argument.`,
 		}
 
 		fmt.Println(resp)
-
-		// if .index.bleve exists, delete it
-		if _, err := os.Stat(filepath.Join(args[0], ".index.bleve")); err == nil {
-			err = os.RemoveAll(filepath.Join(args[0], ".index.bleve"))
-			if err != nil {
-				log.Errorf("Error deleting index: %s", err)
-				os.Exit(1)
-			}
-		}
 	},
 }
 
