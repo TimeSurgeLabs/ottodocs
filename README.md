@@ -2,7 +2,7 @@
 
 [![License: AGPL v3](https://img.shields.io/badge/License-AGPL%20v3-blue.svg)](https://www.gnu.org/licenses/agpl-3.0)
 
-OttoDocs is a command-line tool written in Go that uses GPT-3 (and GPT-4 once the API is available) to automatically generate or add inline and markdown documentation for your code. It can parse a git repository or an individual file and create markdown documentation or add inline comments. The tool requires an [OpenAI API key](https://platform.openai.com/account/api-keys) to function.
+OttoDocs is a command-line tool written in Go that uses ChatGPT to automatically generate or add inline and markdown documentation for your code. It can parse a git repository or an individual file and create markdown documentation or add inline comments. The tool requires an [OpenAI API key](https://platform.openai.com/account/api-keys) to function.
 
 OttoDocs utilizes the `just` command runner for building and running tasks, making maintaining the project easier. If you do not have `just` installed, see [here](https://just.systems/man/en/chapter_5.html) for installation methods.
 
