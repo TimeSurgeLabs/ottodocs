@@ -57,6 +57,24 @@ Or for a single file, you can run:
 otto doc -f <path to file>
 ```
 
+Ask a question about a repo:
+
+```sh
+otto ask . -q "What does LoadFile do differently than ReadFile?"
+```
+
+Generate a commit message:
+
+```sh
+otto commit
+```
+
+Ask it about commands:
+
+```sh
+otto cmd -q "what is the command to add a remote?"
+```
+
 ## Usage
 
 For detailed usage instructions, please refer to the [documentation](docs/otto.md).
