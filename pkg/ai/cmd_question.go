@@ -34,8 +34,6 @@ func CmdQuestion(history []string, chatPrompt string, conf *config.Config) (stri
 
 	question := historyQuestion + questionNoHistory
 
-	// fmt.Println(question)
-
 	messages := []ai_types.ChatMessage{
 		{
 			Content: constants.COMMAND_QUESTION_PROMPT,
