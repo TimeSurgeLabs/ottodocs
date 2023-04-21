@@ -21,6 +21,7 @@ var markdownMode bool
 var overwriteOriginal bool
 
 var conventional bool // use conventional commits
+var plain bool
 
 var log = l.NewWithOptions(os.Stderr, l.Options{
 	Level:           l.InfoLevel,
