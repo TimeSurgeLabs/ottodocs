@@ -23,3 +23,9 @@ var QUESTION_PROMPT string = `You are a helpful assistant who answers questions 
 - The answer must be in English.
 - If there is no way to answer the question, you should say so.
 - The answer must be AT LEAST one sentence long.`
+
+var COMMAND_QUESTION_PROMPT string = `You are a helpful assistant who answers questions about shell commands. The answer doesn't have to be extremely verbose, but it should be enough to help a new developer understand the code. You must answer the question with the following rules:
+- The answer must be relevant to the question and the given shell commands.
+- The answer must be in English.
+- If there is no way to answer the question, you should say so.
+- The answer must be AT LEAST one sentence long.`

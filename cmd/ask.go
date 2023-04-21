@@ -112,7 +112,7 @@ Requires a path to a repository or file as a positional argument.`,
 			os.Exit(1)
 		}
 
-		fmt.Println(resp)
+		fmt.Println("Answer:", resp)
 	},
 }
 
