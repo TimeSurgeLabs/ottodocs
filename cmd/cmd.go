@@ -17,13 +17,9 @@ import (
 // cmdCmd represents the cmd command
 var cmdCmd = &cobra.Command{
 	Use:   "cmd",
-	Short: "Browses Bash",
-	Long: `A longer description that spans multiple lines and likely contains examples
-and usage of using your command. For example:
-
-Cobra is a CLI library for Go that empowers applications.
-This application is a tool to generate the needed files
-to quickly create a Cobra application.`,
+	Short: "Have ChatGPT suggest a command to run next",
+	Long: `Have ChatGPT suggest a command to run next. This command will use your shell history to suggest a command to run next.
+This command is only supported on MacOS and Linux using Bash or Zsh. Windows and other shells coming soon!`,
 	Run: func(cmd *cobra.Command, args []string) {
 		conf, err := config.Load()
 		if err != nil || conf.APIKey == "" {
@@ -62,13 +58,5 @@ to quickly create a Cobra application.`,
 func init() {
 	RootCmd.AddCommand(cmdCmd)
 
-	// Here you will define your flags and configuration settings.
-
-	// Cobra supports Persistent Flags which will work for this command
-	// and all subcommands, e.g.:
-	// cmdCmd.PersistentFlags().String("foo", "", "A help for foo")
-
-	// Cobra supports local flags which will only run when this command
-	// is called directly, e.g.:
-	// cmdCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
+	cmdCmd.Flags().StringVarP(&chatPrompt, "question", "q", "", "The prompt to use for the chat session")
 }

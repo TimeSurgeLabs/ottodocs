@@ -14,6 +14,7 @@ run *commands:
   go run main.go {{commands}}
 
 cobra-docs:
+  rm docs/*.md
   go run docs/gen_docs.go
 
 install: build
