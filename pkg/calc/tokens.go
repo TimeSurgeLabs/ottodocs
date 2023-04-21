@@ -1,6 +1,10 @@
 package calc
 
-import "github.com/pandodao/tokenizer-go"
+import (
+	"strings"
+
+	"github.com/pandodao/tokenizer-go"
+)
 
 // Precise token count
 func PreciseTokens(inputs ...string) (int, error) {
@@ -25,4 +29,15 @@ func EstimateTokens(inputs ...string) int {
 	}
 
 	return total
+}
+
+func GetMaxTokens(model string) int {
+	if strings.Contains(model, "32k") {
+		return 32000
+	}
+	if strings.Contains(model, "4") {
+		return 8000
+	}
+
+	return 4000
 }

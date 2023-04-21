@@ -89,9 +89,9 @@ search for files in the directory and document them. If a single file is specifi
 				}
 
 				if inlineMode || !markdownMode {
-					contents, err = ai.SingleFile(path, fileContents, chatPrompt, conf.APIKey, conf.Model)
+					contents, err = ai.SingleFile(path, fileContents, chatPrompt, conf)
 				} else {
-					contents, err = ai.Markdown(path, fileContents, chatPrompt, conf.APIKey, conf.Model)
+					contents, err = ai.Markdown(path, fileContents, chatPrompt, conf)
 				}
 
 				if err != nil {
@@ -152,9 +152,9 @@ search for files in the directory and document them. If a single file is specifi
 			}
 
 			if inlineMode || !markdownMode {
-				contents, err = ai.SingleFile(filePath, fileContents, chatPrompt, conf.APIKey, conf.Model)
+				contents, err = ai.SingleFile(filePath, fileContents, chatPrompt, conf)
 			} else {
-				contents, err = ai.Markdown(filePath, fileContents, chatPrompt, conf.APIKey, conf.Model)
+				contents, err = ai.Markdown(filePath, fileContents, chatPrompt, conf)
 			}
 
 			if err != nil {

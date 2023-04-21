@@ -20,6 +20,8 @@ var inlineMode bool
 var markdownMode bool
 var overwriteOriginal bool
 
+var conventional bool // use conventional commits
+
 var log = l.NewWithOptions(os.Stderr, l.Options{
 	Level:           l.InfoLevel,
 	ReportTimestamp: false,

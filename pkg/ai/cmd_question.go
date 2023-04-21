@@ -6,12 +6,13 @@ import (
 	gopenai "github.com/CasualCodersProjects/gopenai"
 	ai_types "github.com/CasualCodersProjects/gopenai/types"
 	"github.com/chand1012/ottodocs/pkg/calc"
+	"github.com/chand1012/ottodocs/pkg/config"
 	"github.com/chand1012/ottodocs/pkg/constants"
 )
 
-func CmdQuestion(history []string, chatPrompt, APIKey, model string) (string, error) {
+func CmdQuestion(history []string, chatPrompt string, conf *config.Config) (string, error) {
 	openai := gopenai.NewOpenAI(&gopenai.OpenAIOpts{
-		APIKey: APIKey,
+		APIKey: conf.APIKey,
 	})
 
 	questionNoHistory := "\nQuestion: " + chatPrompt + "\n\nAnswer:"
@@ -24,7 +25,7 @@ func CmdQuestion(history []string, chatPrompt, APIKey, model string) (string, er
 	for i := len(history) - 1; i >= 0; i-- {
 		newHistory := history[i] + "\n"
 		tokens := calc.EstimateTokens(newHistory) + qTokens + calc.EstimateTokens(historyQuestion) + commandPromptTokens
-		if tokens < constants.OPENAI_MAX_TOKENS {
+		if tokens < calc.GetMaxTokens(conf.Model) {
 			historyQuestion += newHistory
 		} else {
 			break
@@ -48,16 +49,16 @@ func CmdQuestion(history []string, chatPrompt, APIKey, model string) (string, er
 
 	tokens := calc.EstimateTokens(messages[0].Content, messages[1].Content)
 
-	maxTokens := constants.OPENAI_MAX_TOKENS - tokens
+	maxTokens := calc.GetMaxTokens(conf.Model) - tokens
 
 	if maxTokens < 0 {
-		return "", fmt.Errorf("the prompt is too long. max length is %d. Got %d", constants.OPENAI_MAX_TOKENS, tokens)
+		return "", fmt.Errorf("the prompt is too long. max length is %d. Got %d", calc.GetMaxTokens(conf.Model), tokens)
 	}
 
 	req := ai_types.NewDefaultChatRequest("")
 	req.Messages = messages
 	req.MaxTokens = maxTokens
-	req.Model = model
+	req.Model = conf.Model
 	// lower the temperature to make the model more deterministic
 	// req.Temperature = 0.3
 

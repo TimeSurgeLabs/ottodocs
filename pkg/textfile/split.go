@@ -5,7 +5,6 @@ import (
 	"strings"
 
 	"github.com/chand1012/ottodocs/pkg/calc"
-	"github.com/chand1012/ottodocs/pkg/constants"
 	"github.com/chand1012/ottodocs/pkg/utils"
 )
 
@@ -21,11 +20,8 @@ func (s *SplitFile) Hash() string {
 	return fmt.Sprintf("%s#%d-%d", s.Path, s.StartLine, s.EndLine)
 }
 
-func Split(path string) ([]SplitFile, error) {
-	// read the file with the os package
-	// split the file into lines with a max of 4000 tokens
-	// return a slice of SplitFile structs
-
+// splits the file based on the max tokens allowed by the model
+func Split(path, model string) ([]SplitFile, error) {
 	contents, err := utils.LoadFile(path)
 	if err != nil {
 		return nil, fmt.Errorf("could not load file: %s", err)
@@ -48,7 +44,7 @@ func Split(path string) ([]SplitFile, error) {
 
 		lastSplitFile := splitFiles[len(splitFiles)-1]
 
-		if calc.EstimateTokens(lastSplitFile.Contents)+calc.EstimateTokens(line) > constants.OPENAI_MAX_TOKENS {
+		if calc.EstimateTokens(lastSplitFile.Contents)+calc.EstimateTokens(line) > calc.GetMaxTokens(model) {
 			splitFiles = append(splitFiles, SplitFile{
 				Path:      path,
 				Contents:  line,

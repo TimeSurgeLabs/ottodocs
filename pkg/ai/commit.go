@@ -2,7 +2,6 @@ package ai
 
 import (
 	"fmt"
-	"strings"
 
 	gopenai "github.com/CasualCodersProjects/gopenai"
 	ai_types "github.com/CasualCodersProjects/gopenai/types"
@@ -11,20 +10,23 @@ import (
 	"github.com/chand1012/ottodocs/pkg/constants"
 )
 
-func Markdown(filePath, contents, chatPrompt string, conf *config.Config) (string, error) {
+func CommitMessage(diff string, conventional bool, conf *config.Config) (string, error) {
 	openai := gopenai.NewOpenAI(&gopenai.OpenAIOpts{
 		APIKey: conf.APIKey,
 	})
 
-	question := chatPrompt + "\n\n" + strings.TrimRight(contents, " \n")
+	sysMessage := constants.GIT_DIFF_PROMPT_STD
+	if conventional {
+		sysMessage = constants.GIT_DIFF_PROMPT_CONVENTIONAL
+	}
 
 	messages := []ai_types.ChatMessage{
 		{
-			Content: constants.DOCUMENT_MARKDOWN_PROMPT,
+			Content: sysMessage,
 			Role:    "system",
 		},
 		{
-			Content: question,
+			Content: diff,
 			Role:    "user",
 		},
 	}
@@ -44,10 +46,7 @@ func Markdown(filePath, contents, chatPrompt string, conf *config.Config) (strin
 	req.Messages = messages
 	req.MaxTokens = maxTokens
 	req.Model = conf.Model
-	// lower the temperature to make the model more deterministic
-	// req.Temperature = 0.3
 
-	// ask ChatGPT the question
 	resp, err := openai.CreateChat(req)
 	if err != nil {
 		return "", err

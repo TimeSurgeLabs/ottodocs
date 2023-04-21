@@ -10,6 +10,7 @@ import (
 	ai_types "github.com/CasualCodersProjects/gopenai/types"
 
 	"github.com/chand1012/ottodocs/pkg/calc"
+	"github.com/chand1012/ottodocs/pkg/config"
 	"github.com/chand1012/ottodocs/pkg/constants"
 	"github.com/chand1012/ottodocs/pkg/textfile"
 )
@@ -35,10 +36,10 @@ func extractLineNumber(line string) (int, error) {
 }
 
 // Document a file using the OpenAI ChatGPT API. Takes a file path, a prompt, and an API key as arguments.
-func SingleFile(filePath, contents, chatPrompt, APIKey, model string) (string, error) {
+func SingleFile(filePath, contents, chatPrompt string, conf *config.Config) (string, error) {
 
 	openai := gopenai.NewOpenAI(&gopenai.OpenAIOpts{
-		APIKey: APIKey,
+		APIKey: conf.APIKey,
 	})
 
 	fileEnding := filepath.Ext(filePath)
@@ -66,16 +67,16 @@ func SingleFile(filePath, contents, chatPrompt, APIKey, model string) (string, e
 		return "", fmt.Errorf("could not calculate tokens: %s", err)
 	}
 
-	maxTokens := constants.OPENAI_MAX_TOKENS - tokens
+	maxTokens := calc.GetMaxTokens(conf.Model) - tokens
 
 	if maxTokens < 0 {
-		return "", fmt.Errorf("the prompt is too long. max length is %d. Got %d", constants.OPENAI_MAX_TOKENS, tokens)
+		return "", fmt.Errorf("the prompt is too long. max length is %d. Got %d", calc.GetMaxTokens(conf.Model), tokens)
 	}
 
 	req := ai_types.NewDefaultChatRequest("")
 	req.Messages = messages
 	req.MaxTokens = maxTokens
-	req.Model = model
+	req.Model = conf.Model
 	// lower the temperature to make the model more deterministic
 	req.Temperature = 0.3
 

@@ -29,3 +29,7 @@ var COMMAND_QUESTION_PROMPT string = `You are a helpful assistant who answers qu
 - The answer must be in English.
 - If there is no way to answer the question, you should say so.
 - The answer must be AT LEAST one sentence long.`
+
+var GIT_DIFF_PROMPT_STD string = `You are a helpful assistant who writes git commit messages. You will be given a Git diff and you should use it to create a commit message. The commit message should be roughly 50 characters long and should describe the changes in the diff. Do not include the file names in the commit message.`
+
+var GIT_DIFF_PROMPT_CONVENTIONAL string = `You are a helpful assistant who writes git commit messages. You will be given a Git diff and you should use it to create a commit message. The commit message should be roughly 50 characters long and should describe the changes in the diff. Do not include the file names in the commit message. The commit message should follow the conventional commit format.`

@@ -44,7 +44,7 @@ This command is only supported on MacOS and Linux using Bash or Zsh. Windows and
 
 		// fmt.Println("History:", history)
 
-		resp, err := ai.CmdQuestion(history, chatPrompt, conf.APIKey, conf.Model)
+		resp, err := ai.CmdQuestion(history, chatPrompt, conf)
 
 		if err != nil {
 			log.Error(err)
