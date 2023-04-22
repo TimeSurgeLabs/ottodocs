@@ -6,6 +6,8 @@ import (
 	l "github.com/charmbracelet/log"
 )
 
+var verbose bool
+
 var repoPath string
 var preambleFile string
 var outputFile string

@@ -11,6 +11,7 @@ import (
 	"github.com/chand1012/ottodocs/pkg/ai"
 	"github.com/chand1012/ottodocs/pkg/config"
 	"github.com/chand1012/ottodocs/pkg/git"
+	l "github.com/charmbracelet/log"
 	"github.com/spf13/cobra"
 )
 
@@ -19,6 +20,11 @@ var commitCmd = &cobra.Command{
 	Use:   "commit",
 	Short: "Generates a commit message from the git diff",
 	Long:  `Uses the git diff to generate a commit message. Requires Git to be installed on the system.`,
+	PreRun: func(cmd *cobra.Command, args []string) {
+		if verbose {
+			log.SetLevel(l.DebugLevel)
+		}
+	},
 	Run: func(cmd *cobra.Command, args []string) {
 		conf, err := config.Load()
 		if err != nil || conf.APIKey == "" {
@@ -29,7 +35,7 @@ var commitCmd = &cobra.Command{
 		}
 
 		log.Info("Generating commit message...")
-
+		log.Debug("Getting git diff...")
 		c := exec.Command("git", "diff")
 		diffBytes, err := c.Output()
 		if err != nil {
@@ -38,7 +44,7 @@ var commitCmd = &cobra.Command{
 		}
 
 		diff := string(diffBytes)
-
+		log.Debug("Sending diff to ChatGPT...")
 		msg, err := ai.CommitMessage(diff, conventional, conf)
 		if err != nil {
 			log.Error(err)
@@ -86,4 +92,5 @@ func init() {
 	commitCmd.Flags().BoolVarP(&plain, "plain", "p", false, "no output formatting")
 	commitCmd.Flags().BoolVarP(&auto, "auto", "a", false, "automatically add all and commit with the generated message")
 	commitCmd.Flags().BoolVar(&push, "push", false, "automatically push to the current branch")
+	commitCmd.Flags().BoolVarP(&verbose, "verbose", "v", false, "verbose output")
 }

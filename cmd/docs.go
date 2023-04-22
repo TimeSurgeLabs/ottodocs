@@ -57,6 +57,7 @@ search for files in the directory and document them. If a single file is specifi
 			os.Exit(1)
 		}
 
+		log.Debug("Loading file info...")
 		info, err := os.Stat(repoPath)
 		if err != nil {
 			log.Errorf("Error getting file info: %s", err)
@@ -64,12 +65,14 @@ search for files in the directory and document them. If a single file is specifi
 		}
 
 		if info.IsDir() {
+			log.Debug("Getting repo...")
 			repo, err := git.GetRepo(repoPath, ignoreFilePath, ignoreGitignore)
 			if err != nil {
 				log.Errorf("Error: %s", err)
 				os.Exit(1)
 			}
 
+			log.Debug("Documenting repo...")
 			for _, file := range repo.Files {
 				var contents string
 
@@ -83,6 +86,7 @@ search for files in the directory and document them. If a single file is specifi
 					chatPrompt = "Write documentation for the following code snippet. The file name is" + file.Path + ":"
 				}
 
+				log.Debugf("Loading file %s", path)
 				fileContents, err := utils.LoadFile(path)
 				if err != nil {
 					log.Warnf("Error loading file %s: %s", path, err)

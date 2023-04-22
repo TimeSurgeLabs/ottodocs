@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"os"
 
+	l "github.com/charmbracelet/log"
 	"github.com/spf13/cobra"
 
 	"github.com/chand1012/ottodocs/pkg/ai"
@@ -20,6 +21,11 @@ var cmdCmd = &cobra.Command{
 	Short: "Have ChatGPT suggest a command to run next",
 	Long: `Have ChatGPT suggest a command to run next. This command will use your shell history to suggest a command to run next.
 This command is only supported on MacOS and Linux using Bash or Zsh. Windows and other shells coming soon!`,
+	PreRun: func(cmd *cobra.Command, args []string) {
+		if verbose {
+			log.SetLevel(l.DebugLevel)
+		}
+	},
 	Run: func(cmd *cobra.Command, args []string) {
 		conf, err := config.Load()
 		if err != nil || conf.APIKey == "" {
@@ -34,16 +40,15 @@ This command is only supported on MacOS and Linux using Bash or Zsh. Windows and
 		}
 
 		log.Info("Thinking....")
-
+		log.Debug("Getting shell history...")
 		history, err := shell.GetHistory(100)
 		if err != nil {
-			log.Error("This command is only supported on MacOS and Linux using Bash or Zsh. Windows and other shells coming soon!")
+			log.Warn("This command is only supported on MacOS and Linux using Bash or Zsh. Windows and other shells coming soon!")
 			log.Error(err)
 			os.Exit(1)
 		}
 
-		// fmt.Println("History:", history)
-
+		log.Debug("Asking ChatGPT for a command...")
 		resp, err := ai.CmdQuestion(history, chatPrompt, conf)
 
 		if err != nil {
@@ -59,4 +64,5 @@ func init() {
 	RootCmd.AddCommand(cmdCmd)
 
 	cmdCmd.Flags().StringVarP(&chatPrompt, "question", "q", "", "The prompt to use for the chat session")
+	cmdCmd.Flags().BoolVarP(&verbose, "verbose", "v", false, "verbose output")
 }

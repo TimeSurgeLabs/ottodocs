@@ -7,16 +7,28 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"sort"
 	"strings"
 
+	"github.com/chand1012/git2gpt/prompt"
 	"github.com/chand1012/memory"
+	l "github.com/charmbracelet/log"
 	"github.com/spf13/cobra"
 
 	"github.com/chand1012/ottodocs/pkg/ai"
+	"github.com/chand1012/ottodocs/pkg/calc"
 	"github.com/chand1012/ottodocs/pkg/config"
 	"github.com/chand1012/ottodocs/pkg/git"
 	"github.com/chand1012/ottodocs/pkg/utils"
 )
+
+// move this to memory package eventually
+func sortByScore(fragments []memory.MemoryFragment) []memory.MemoryFragment {
+	sort.Slice(fragments, func(i, j int) bool {
+		return fragments[i].Score > fragments[j].Score
+	})
+	return fragments
+}
 
 // askCmd represents the ask command
 var askCmd = &cobra.Command{
@@ -30,7 +42,13 @@ Requires a path to a repository or file as a positional argument.`,
 		}
 		return nil
 	}),
+	PreRun: func(cmd *cobra.Command, args []string) {
+		if verbose {
+			log.SetLevel(l.DebugLevel)
+		}
+	},
 	Run: func(cmd *cobra.Command, args []string) {
+		var answer string
 		repoPath := args[0]
 		var fileName string
 		conf, err := config.Load()
@@ -42,12 +60,14 @@ Requires a path to a repository or file as a positional argument.`,
 		}
 
 		if chatPrompt == "" {
+			log.Debug("User did not enter a question. Prompting for one...")
 			fmt.Println("Please enter a question: ")
 			fmt.Scanln(&chatPrompt)
 			// strip the newline character
 			chatPrompt = strings.TrimRight(chatPrompt, " \n")
 		}
 
+		log.Debug("Getting file contents...")
 		info, err := os.Stat(repoPath)
 		if err != nil {
 			log.Errorf("Error getting file info: %s", err)
@@ -56,9 +76,11 @@ Requires a path to a repository or file as a positional argument.`,
 		// check if the first arg is a file or a directory
 		// if it's a file, ask a question about that file directly
 		if info.IsDir() {
+			log.Debug("Constructing repo memory...")
 			// Define a temporary path for the index file
 			testIndexPath := filepath.Join(args[0], ".index.memory")
 
+			log.Debug("Creating memory index...")
 			// Create a new memory index
 			m, _, err := memory.New(testIndexPath)
 			if err != nil {
@@ -66,6 +88,7 @@ Requires a path to a repository or file as a positional argument.`,
 				os.Exit(1)
 			}
 
+			log.Debug("Indexing repo...")
 			// index the repo
 			repo, err := git.GetRepo(repoPath, ignoreFilePath, ignoreGitignore)
 			if err != nil {
@@ -82,6 +105,7 @@ Requires a path to a repository or file as a positional argument.`,
 				}
 			}
 
+			log.Debug("Searching memory index...")
 			// search the memory index
 			results, err := m.Search(chatPrompt)
 			if err != nil {
@@ -89,31 +113,67 @@ Requires a path to a repository or file as a positional argument.`,
 				os.Exit(1)
 			}
 
+			log.Debug("Results extracted. Destroying memory index...")
+			// close the memory index
 			m.Destroy()
 
-			// get the top fragment by average score
-			top := memory.TopFragmentAvg(results)
-			fileName = top.ID
+			log.Debug("Sorting results...")
+			sortedFragments := sortByScore(results)
+
+			log.Debug("Getting file contents...")
+			var files []prompt.GitFile
+			for _, result := range sortedFragments {
+				for _, file := range repo.Files {
+					if file.Path == result.ID {
+						files = append(files, file)
+					}
+				}
+			}
+
+			if len(files) == 0 {
+				log.Error("No results found.")
+				os.Exit(1)
+			}
+
+			log.Debug("Asking chatGPT question...")
+			answer, err = ai.Question(files, chatPrompt, conf)
+			if err != nil {
+				log.Errorf("Error asking question: %s", err)
+				os.Exit(1)
+			}
 		} else {
+			log.Debug("Getting file contents...")
 			fileName = repoPath
+			content, err := utils.LoadFile(fileName)
+			if err != nil {
+				log.Errorf("Error loading file: %s", err)
+				os.Exit(1)
+			}
+
+			log.Debug("Calculating tokens and constructing file...")
+			tokens, err := calc.PreciseTokens(content)
+			if err != nil {
+				log.Errorf("Error calculating tokens: %s", err)
+				os.Exit(1)
+			}
+
+			files := []prompt.GitFile{
+				{
+					Path:     fileName,
+					Contents: content,
+					Tokens:   int64(tokens),
+				},
+			}
+
+			log.Debug("Asking chatGPT question...")
+			answer, err = ai.Question(files, chatPrompt, conf)
+			if err != nil {
+				log.Errorf("Error asking question: %s", err)
+				os.Exit(1)
+			}
 		}
 
-		fmt.Println("Asking question about " + fileName + "...")
-
-		content, err := utils.LoadFile(fileName)
-		if err != nil {
-			log.Errorf("Error loading file: %s", err)
-			os.Exit(1)
-		}
-
-		resp, err := ai.Question(fileName, content, chatPrompt, conf)
-
-		if err != nil {
-			log.Errorf("Error asking question: %s", err)
-			os.Exit(1)
-		}
-
-		fmt.Println("Answer:", resp)
+		fmt.Println("Answer:", answer)
 	},
 }
 
@@ -122,4 +182,5 @@ func init() {
 	askCmd.Flags().StringVarP(&chatPrompt, "question", "q", "", "The question to ask")
 	askCmd.Flags().BoolVarP(&ignoreGitignore, "ignore-gitignore", "g", false, "ignore .gitignore file")
 	askCmd.Flags().StringVarP(&ignoreFilePath, "ignore", "n", "", "path to .gptignore file")
+	askCmd.Flags().BoolVarP(&verbose, "verbose", "v", false, "verbose output")
 }
