@@ -4,11 +4,12 @@ Copyright © 2023 Chandler <chandler@chand1012.dev>
 package cmd
 
 import (
+	"context"
 	"fmt"
 	"os"
 
-	gopenai "github.com/CasualCodersProjects/gopenai"
 	"github.com/chand1012/ottodocs/pkg/config"
+	"github.com/sashabaranov/go-openai"
 	"github.com/spf13/cobra"
 )
 
@@ -31,9 +32,7 @@ If '-q' is not specified, the user will be prompted to enter a question.
 			os.Exit(1)
 		}
 
-		openai := gopenai.NewOpenAI(&gopenai.OpenAIOpts{
-			APIKey: conf.APIKey,
-		})
+		client := openai.NewClient(conf.APIKey)
 
 		// if the question is not provided, prompt the user for it
 		if question == "" {
@@ -41,16 +40,27 @@ If '-q' is not specified, the user will be prompted to enter a question.
 			fmt.Scanln(&question)
 		}
 
-		// chat ChatGPT the question
-		resp, err := openai.CreateChatSimple(question, 0) // 0 sets the max tokens to 1024
+		resp, err := client.CreateChatCompletion(context.Background(), openai.ChatCompletionRequest{
+			Model: conf.Model,
+			Messages: []openai.ChatCompletionMessage{
+				{
+					Content: question,
+					Role:    openai.ChatMessageRoleUser,
+				},
+			},
+		})
+
 		if err != nil {
-			log.Errorf("Error: %s", err)
+			log.Error(err)
 			os.Exit(1)
 		}
 
-		message := resp.Choices[0].Message.Content
+		if len(resp.Choices) == 0 {
+			log.Error("No choices returned")
+			os.Exit(1)
+		}
 
-		fmt.Println(message)
+		fmt.Println(resp.Choices[0].Message.Content)
 	},
 }
 

@@ -68,6 +68,7 @@ var commitCmd = &cobra.Command{
 				}
 				fmt.Println(output)
 			}
+			os.Exit(0)
 		}
 
 		if plain {

@@ -3,7 +3,6 @@ module github.com/chand1012/ottodocs
 go 1.20
 
 require (
-	github.com/CasualCodersProjects/gopenai v0.3.0
 	github.com/chand1012/git2gpt v0.4.1
 	github.com/chand1012/memory v0.3.0
 	github.com/charmbracelet/log v0.2.1

@@ -1,6 +1,4 @@
 github.com/BurntSushi/toml v0.3.1/go.mod h1:xHWCNGjB5oqiDr8zfno3MHue2Ht5sIBksp03qcyfWMU=
-github.com/CasualCodersProjects/gopenai v0.3.0 h1:vTFe2Rl/At+LnRL0q/joNHYZGVQd19HXFaQT6aNnpWg=
-github.com/CasualCodersProjects/gopenai v0.3.0/go.mod h1:NGGTkFg60IYsXynphxExU11U4YqWDKEg/XqP9sVvwEY=
 github.com/RoaringBitmap/roaring v0.4.23/go.mod h1:D0gp8kJQgE1A4LQ5wFLggQEyvDi06Mq5mKs52e1TwOo=
 github.com/RoaringBitmap/roaring v1.2.3 h1:yqreLINqIrX22ErkKI0vY47/ivtJr6n+kMhVOVmhWBY=
 github.com/RoaringBitmap/roaring v1.2.3/go.mod h1:plvDsJQpxOC5bw8LRteu/MLWHsHez/3y6cubLI4/1yE=
