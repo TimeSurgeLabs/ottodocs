@@ -10,6 +10,7 @@ import (
 
 	"github.com/chand1012/ottodocs/pkg/ai"
 	"github.com/chand1012/ottodocs/pkg/config"
+	"github.com/chand1012/ottodocs/pkg/git"
 	"github.com/spf13/cobra"
 )
 
@@ -27,6 +28,8 @@ var commitCmd = &cobra.Command{
 			os.Exit(1)
 		}
 
+		log.Info("Generating commit message...")
+
 		c := exec.Command("git", "diff")
 		diffBytes, err := c.Output()
 		if err != nil {
@@ -42,7 +45,36 @@ var commitCmd = &cobra.Command{
 			os.Exit(1)
 		}
 
-		fmt.Println("Commit message:", msg)
+		if auto || push {
+			log.Info("Adding and committing...")
+			output, err := git.AddAll()
+			if err != nil {
+				log.Error(err)
+				os.Exit(1)
+			}
+			fmt.Println(output)
+			output, err = git.Commit(msg)
+			if err != nil {
+				log.Error(err)
+				os.Exit(1)
+			}
+			fmt.Println(output)
+			if push {
+				log.Info("Pushing...")
+				output, err = git.Push()
+				if err != nil {
+					log.Error(err)
+					os.Exit(1)
+				}
+				fmt.Println(output)
+			}
+		}
+
+		if plain {
+			fmt.Println(msg)
+		} else {
+			fmt.Println("Commit message:", msg)
+		}
 	},
 }
 
@@ -51,4 +83,6 @@ func init() {
 
 	commitCmd.Flags().BoolVarP(&conventional, "conventional", "c", false, "use conventional commits")
 	commitCmd.Flags().BoolVarP(&plain, "plain", "p", false, "no output formatting")
+	commitCmd.Flags().BoolVarP(&auto, "auto", "a", false, "automatically add all and commit with the generated message")
+	commitCmd.Flags().BoolVar(&push, "push", false, "automatically push to the current branch")
 }

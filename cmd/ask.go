@@ -14,6 +14,7 @@ import (
 
 	"github.com/chand1012/ottodocs/pkg/ai"
 	"github.com/chand1012/ottodocs/pkg/config"
+	"github.com/chand1012/ottodocs/pkg/git"
 	"github.com/chand1012/ottodocs/pkg/utils"
 )
 
@@ -66,7 +67,7 @@ Requires a path to a repository or file as a positional argument.`,
 			}
 
 			// index the repo
-			repo, err := utils.GetRepo(repoPath, ignoreFilePath, ignoreGitignore)
+			repo, err := git.GetRepo(repoPath, ignoreFilePath, ignoreGitignore)
 			if err != nil {
 				log.Errorf("Error processing repo: %s", err)
 				os.Exit(1)

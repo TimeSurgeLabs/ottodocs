@@ -10,6 +10,7 @@ import (
 
 	"github.com/chand1012/ottodocs/pkg/ai"
 	"github.com/chand1012/ottodocs/pkg/config"
+	"github.com/chand1012/ottodocs/pkg/git"
 	"github.com/chand1012/ottodocs/pkg/utils"
 	"github.com/spf13/cobra"
 )
@@ -63,7 +64,7 @@ search for files in the directory and document them. If a single file is specifi
 		}
 
 		if info.IsDir() {
-			repo, err := utils.GetRepo(repoPath, ignoreFilePath, ignoreGitignore)
+			repo, err := git.GetRepo(repoPath, ignoreFilePath, ignoreGitignore)
 			if err != nil {
 				log.Errorf("Error: %s", err)
 				os.Exit(1)

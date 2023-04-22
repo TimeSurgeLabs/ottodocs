@@ -1,36 +1,21 @@
-package utils
+package git
 
 import (
 	"fmt"
 	"net/url"
-	"path/filepath"
+	"os/exec"
 	"strings"
-
-	"github.com/chand1012/git2gpt/prompt"
-	"github.com/go-git/go-git/v5"
 )
 
-// GetRepo returns a GitRepo object for the given repoPath
-func GetRepo(repoPath, ignoreFilePath string, ignoreGitIgnore bool) (*prompt.GitRepo, error) {
-	ignoreList := prompt.GenerateIgnoreList(repoPath, ignoreFilePath, !ignoreGitIgnore)
-	ignoreList = append(ignoreList, filepath.Join(repoPath, ".gptignore"))
-	repo, err := prompt.ProcessGitRepo(repoPath, ignoreList)
-	if err != nil {
-		return nil, err
-	}
-	return repo, nil
-}
-
 func GetOrigin(repoPath string) (string, error) {
-	repo, err := git.PlainOpen(repoPath)
+	cmd := exec.Command("git", "remote", "get-url", "origin")
+	// output
+	out, err := cmd.Output()
 	if err != nil {
 		return "", err
 	}
-	origin, err := repo.Remote("origin")
-	if err != nil {
-		return "", err
-	}
-	return origin.Config().URLs[0], nil
+
+	return strings.TrimSpace(string(out)), nil
 }
 
 func OriginToGitHub(origin string) (string, error) {
