@@ -33,11 +33,11 @@ func EstimateTokens(inputs ...string) int {
 
 func GetMaxTokens(model string) int {
 	if strings.Contains(model, "32k") {
-		return 32000
+		return 32768
 	}
 	if strings.Contains(model, "4") {
-		return 8000
+		return 8192
 	}
 
-	return 4000
+	return 4096
 }
