@@ -6,7 +6,6 @@ package cmd
 import (
 	"fmt"
 	"os"
-	"os/exec"
 
 	"github.com/chand1012/ottodocs/pkg/ai"
 	"github.com/chand1012/ottodocs/pkg/config"
@@ -34,16 +33,25 @@ var commitCmd = &cobra.Command{
 			os.Exit(1)
 		}
 
-		log.Info("Generating commit message...")
-		log.Debug("Getting git diff...")
-		c := exec.Command("git", "diff")
-		diffBytes, err := c.Output()
+		dirty, err := git.IsDirty()
 		if err != nil {
 			log.Error(err)
 			os.Exit(1)
 		}
 
-		diff := string(diffBytes)
+		if !dirty {
+			log.Error("No changes to commit.")
+			os.Exit(1)
+		}
+
+		log.Info("Generating commit message...")
+		log.Debug("Getting git diff...")
+		diff, err := git.Diff()
+		if err != nil {
+			log.Error(err)
+			os.Exit(1)
+		}
+
 		log.Debug("Sending diff to ChatGPT...")
 		msg, err := ai.CommitMessage(diff, conventional, conf)
 		if err != nil {
