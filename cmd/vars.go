@@ -27,6 +27,9 @@ var plain bool
 var auto bool
 var push bool
 
+var base string
+var title string
+
 var log = l.NewWithOptions(os.Stderr, l.Options{
 	Level:           l.InfoLevel,
 	ReportTimestamp: false,
