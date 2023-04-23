@@ -18,7 +18,8 @@ import (
 var prCmd = &cobra.Command{
 	Use:   "pr",
 	Short: "Generate a pull request",
-	Long:  `Generates a pull request from commit messages, title, and the git diff.`,
+	Long: `The "pr" command generates a pull request by combining commit messages, a title, and the git diff between branches.
+Requires Git to be installed on the system. If a title is not provided, one will be generated.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		c, err := config.Load()
 		if err != nil {
