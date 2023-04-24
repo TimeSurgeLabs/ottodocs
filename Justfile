@@ -2,6 +2,7 @@ DATE := `date +"%Y-%m-%d_%H:%M:%S"`
 GIT_COMMIT := `git rev-parse HEAD`
 VERSION_TAG := `git describe --tags --abbrev=0`
 LD_FLAGS := "-X github.com/chand1012/ottodocs/cmd.buildDate=" + DATE + " -X github.com/chand1012/ottodocs/cmd.commitHash=" + GIT_COMMIT + " -X github.com/chand1012/ottodocs/cmd.tag=" + VERSION_TAG
+EXEC_EXT := `[[ "$(uname -o)" == "Msys" ]] && echo ".exe"`
 
 default:
   just --list --unsorted
@@ -10,7 +11,7 @@ tidy:
   go mod tidy
 
 build:
-  go build -ldflags "{{LD_FLAGS}}" -v -o bin/otto
+  go build -ldflags "{{LD_FLAGS}}" -v -o bin/otto{{EXEC_EXT}}
 
 clean:
   rm -rf bin dist
