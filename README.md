@@ -36,14 +36,22 @@ First, you need to create an OpenAI API Key. If you do not already have an OpenA
 Once you have an API key, you can log in to ottodocs by running the following command:
 
 ```sh
-otto login
+otto config --apikey $OPENAI_API_KEY
 ```
 
-Optionally you can pass the API key as an argument to the command:
+You can set the model to use by running:
 
 ```sh
-otto login --apikey $OPENAI_API_KEY
+otto config --model $MODEL_NAME
 ```
+
+You can add a GitHub Personal Access Token for opening PRs by running:
+
+```sh
+otto config --token $GITHUB_TOKEN
+```
+
+Make sure that your access token has the `repo` scope.
 
 Once that is complete, you can start generating documentation by running the following command:
 
@@ -66,7 +74,14 @@ otto ask . -q "What does LoadFile do differently than ReadFile?"
 Generate a commit message:
 
 ```sh
-otto commit
+otto commit # optionally add --push to push to remote
+```
+
+Generate a pull request:
+
+```sh
+# make sure you are creating the PR on the correct base branch
+otto pr -b main # optionally add --publish to publish the Pull Request
 ```
 
 Ask it about commands:
@@ -77,4 +92,4 @@ otto cmd -q "what is the command to add a remote?"
 
 ## Usage
 
-For detailed usage instructions, please refer to the [documentation](docs/otto.md).
+For detailed usage instructions, please refer to the [documentation](https://ottodocs.chand1012.dev/docs/usage/otto).

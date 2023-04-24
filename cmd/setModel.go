@@ -4,6 +4,8 @@ Copyright © 2023 Chandler <chandler@chand1012.dev>
 package cmd
 
 import (
+	"os"
+
 	"github.com/spf13/cobra"
 
 	"github.com/chand1012/ottodocs/pkg/config"
@@ -25,6 +27,7 @@ See here for more information: https://platform.openai.com/docs/models/model-end
 		c, err := config.Load()
 		if err != nil {
 			log.Errorf("Error loading config: %s", err)
+			os.Exit(1)
 		}
 		if !utils.Contains(VALID_MODELS, model) {
 			log.Errorf("Invalid model: %s", model)

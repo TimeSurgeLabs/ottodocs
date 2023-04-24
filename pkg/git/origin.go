@@ -3,19 +3,12 @@ package git
 import (
 	"fmt"
 	"net/url"
-	"os/exec"
+	"regexp"
 	"strings"
 )
 
-func GetOrigin(repoPath string) (string, error) {
-	cmd := exec.Command("git", "remote", "get-url", "origin")
-	// output
-	out, err := cmd.Output()
-	if err != nil {
-		return "", err
-	}
-
-	return strings.TrimSpace(string(out)), nil
+func GetRemote(remote string) (string, error) {
+	return git("remote", "get-url", remote)
 }
 
 func OriginToGitHub(origin string) (string, error) {
@@ -40,17 +33,19 @@ func OriginToGitHub(origin string) (string, error) {
 	return "", fmt.Errorf("unsupported protocol: %s", parsedURL.Scheme)
 }
 
-func ExtractOriginInfo(origin string) (string, string, error) {
-	// Remove .git from the path if it exists
-	path := strings.TrimSuffix(origin, ".git")
+func ExtractOriginInfo(gitURL string) (string, string, error) {
+	// Regular expression to match both SSH and HTTPS URLs
+	// This pattern supports optional ".git" at the end and optional "https://" or "git@" at the beginning
+	regexPattern := `^(?:(?:https:\/\/|git@)github\.com(?:\/|:))?(\w+)\/(\w+)(?:\.git)?$`
+	regex := regexp.MustCompile(regexPattern)
 
-	// Extract the owner and repo name
-	splitPath := strings.Split(path, "/")
-	if len(splitPath) < 2 {
-		return "", "", fmt.Errorf("invalid origin URL: %s", origin)
+	matches := regex.FindStringSubmatch(gitURL)
+
+	if len(matches) == 3 {
+		owner := matches[1]
+		repo := matches[2]
+		return owner, repo, nil
 	}
-	owner := splitPath[len(splitPath)-2]
-	repo := splitPath[len(splitPath)-1]
 
-	return owner, repo, nil
+	return "", "", fmt.Errorf("unable to parse owner and repo from git URL")
 }

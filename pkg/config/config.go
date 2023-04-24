@@ -9,8 +9,10 @@ import (
 
 // Config represents the configuration file
 type Config struct {
-	APIKey string `json:"api_key"`
-	Model  string `json:"model"`
+	APIKey    string `json:"api_key"`
+	Model     string `json:"model"`
+	GHToken   string `json:"gh_token"`
+	Signature string `json:"signature"`
 }
 
 // also returns the path to the config file
@@ -41,8 +43,10 @@ func createIfNotExists() (string, error) {
 		}
 		// add an empty config to the file
 		blankConfig := Config{
-			APIKey: "",
-			Model:  "gpt-3.5-turbo",
+			APIKey:    "",
+			Model:     "gpt-3.5-turbo",
+			GHToken:   "",
+			Signature: "Created by [OttoDocs 🦦](https://ottodocs.chand1012.dev/)",
 		}
 		err = json.NewEncoder(file).Encode(blankConfig)
 		if err != nil {
