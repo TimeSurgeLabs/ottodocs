@@ -9,6 +9,7 @@ import (
 	"os"
 
 	"github.com/chand1012/ottodocs/pkg/config"
+	l "github.com/charmbracelet/log"
 	"github.com/sashabaranov/go-openai"
 	"github.com/spf13/cobra"
 )
@@ -23,6 +24,11 @@ var chatCmd = &cobra.Command{
 
 If '-q' is not specified, the user will be prompted to enter a question.
 	`,
+	PreRun: func(cmd *cobra.Command, args []string) {
+		if verbose {
+			log.SetLevel(l.DebugLevel)
+		}
+	},
 	Run: func(cmd *cobra.Command, args []string) {
 		conf, err := config.Load()
 		if err != nil || conf.APIKey == "" {
@@ -39,6 +45,8 @@ If '-q' is not specified, the user will be prompted to enter a question.
 			fmt.Print("What would you like to chat ChatGPT?\n> ")
 			fmt.Scanln(&question)
 		}
+
+		log.Debugf("Sending question: %s", question)
 
 		resp, err := client.CreateChatCompletion(context.Background(), openai.ChatCompletionRequest{
 			Model: conf.Model,
@@ -68,4 +76,5 @@ func init() {
 	RootCmd.AddCommand(chatCmd)
 
 	chatCmd.Flags().StringVarP(&question, "question", "q", "", "Question to chat ChatGPT")
+	chatCmd.Flags().BoolVarP(&verbose, "verbose", "v", false, "Verbose output")
 }

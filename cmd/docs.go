@@ -21,6 +21,9 @@ var docsCmd = &cobra.Command{
 	Short: "Document a repository of files or a single file",
 	Long: `Document an entire repository of files. Specify the path to the repo as the first positional argument. This command will recursively
 search for files in the directory and document them. If a single file is specified, it will be documented.
+
+Example:
+otto docs . -i -w 
 	`,
 	Args: cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
