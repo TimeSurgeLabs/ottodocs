@@ -17,7 +17,7 @@ Simply download the binary for your platform from the [GitHub releases tab](http
 
 ### Building From Source
 
-OttoDocs utilizes the `just` command runner for building and running tasks, making maintaining the project easier. If you do not have `just` installed, see [here](https://just.systems/man/en/chapter_5.html) for installation methods.
+OttoDocs utilizes the `just` command runner for building and running tasks, making maintaining the project easier. If you do not have `just` installed, see [here](https://just.systems/man/en/chapter_5.html) for installation methods. Ottodocs requires [Go 1.20+](https://go.dev/dl/) to build.
 
 ```sh
 git clone https://github.com/chand1012/ottodocs.git
