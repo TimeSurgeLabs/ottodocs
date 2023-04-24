@@ -51,9 +51,9 @@ search for files in the directory and document them. If a single file is specifi
 
 		conf, err := config.Load()
 		if err != nil || conf.APIKey == "" {
-			// if the API key is not set, prompt the user to login
-			log.Error("Please login first.")
-			log.Error("Run `ottodocs login` to login.")
+			// if the API key is not set, prompt the user to config
+			log.Error("Please config first.")
+			log.Error("Run `ottodocs config -h` to learn how to config.")
 			os.Exit(1)
 		}
 
