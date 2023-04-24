@@ -37,6 +37,8 @@ Requires Git to be installed on the system. If a title is not provided, one will
 			os.Exit(1)
 		}
 
+		log.Info("Generating PR...")
+
 		currentBranch, err := git.GetBranch()
 		if err != nil {
 			log.Errorf("Error getting current branch: %s", err)
@@ -170,11 +172,11 @@ Requires Git to be installed on the system. If a title is not provided, one will
 
 		data := make(map[string]string)
 		data["title"] = title
-		data["body"] = body
+		data["body"] = body + "\n\n" + c.Signature
 		data["head"] = currentBranch
 		data["base"] = base
 
-		log.Debug("Opening pull request...")
+		log.Info("Opening pull request...")
 		prNumber, err := gh.OpenPullRequest(data, owner, repo, c)
 		if err != nil {
 			log.Errorf("Error opening pull request: %s", err)
