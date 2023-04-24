@@ -71,7 +71,7 @@ Requires Git to be installed on the system. If a title is not provided, one will
 
 		log.Debugf("Title: %s", title)
 		// get the diff
-		diff, err := git.Diff()
+		diff, err := git.GetBranchDiff(base, currentBranch)
 		if err != nil {
 			log.Errorf("Error getting diff: %s", err)
 			os.Exit(1)
@@ -90,6 +90,14 @@ Requires Git to be installed on the system. If a title is not provided, one will
 		if err != nil {
 			log.Errorf("Error counting title tokens: %s", err)
 			os.Exit(1)
+		}
+
+		if diffTokens == 0 {
+			log.Warn("Diff is empty!")
+		}
+
+		if titleTokens == 0 {
+			log.Warn("Title is empty!")
 		}
 
 		log.Debugf("Diff tokens: %d", diffTokens)
