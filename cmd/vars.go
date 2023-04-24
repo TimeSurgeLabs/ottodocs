@@ -30,6 +30,11 @@ var push bool
 var base string
 var title string
 
+var model string
+var apiKey string
+var ghToken string
+var remote string
+
 var log = l.NewWithOptions(os.Stderr, l.Options{
 	Level:           l.InfoLevel,
 	ReportTimestamp: false,

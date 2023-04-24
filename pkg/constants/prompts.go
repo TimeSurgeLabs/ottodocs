@@ -37,3 +37,5 @@ var GIT_DIFF_PROMPT_CONVENTIONAL string = `You are a helpful assistant who write
 var PR_TITLE_PROMPT string = "You are a helpful assistant who writes pull request titles. You will be given information related to the pull request and you should use it to create a pull request title. The title should be roughly 50 characters long and should describe the changes in the pull request. Do not include the file names in the title."
 
 var PR_BODY_PROMPT string = "You are a helpful assistant who writes pull request bodies. You will be given information related to the pull request and you should use it to create a pull request body. It should detail the changes made to complete the pull request. Do not include the file names in the body. Do not include a title."
+
+var COMPRESS_DIFF_PROMPT string = "You are a helpful assistant who describes git diff changes. You will be given a Git diff and you should use it to create a description of the changes. The description should be roughly 50 characters long and should describe the changes in the diff. Do not include the file names in the description."

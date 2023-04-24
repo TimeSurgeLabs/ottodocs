@@ -31,6 +31,14 @@ func GetBranchDiff(base, head string) (string, error) {
 	return git("diff", base+".."+head)
 }
 
+func GetFileDiff(file string) (string, error) {
+	return git("diff", file)
+}
+
+func GetFileDiffBranches(base, head, file string) (string, error) {
+	return git("diff", base+".."+head, file)
+}
+
 func GetChangedFilesBranches(base, head string) ([]string, error) {
 	resp, err := git("diff", "--name-only", base+".."+head)
 	if err != nil {

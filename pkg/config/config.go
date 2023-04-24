@@ -9,8 +9,9 @@ import (
 
 // Config represents the configuration file
 type Config struct {
-	APIKey string `json:"api_key"`
-	Model  string `json:"model"`
+	APIKey  string `json:"api_key"`
+	Model   string `json:"model"`
+	GHToken string `json:"gh_token"`
 }
 
 // also returns the path to the config file

@@ -11,8 +11,6 @@ import (
 	"github.com/spf13/cobra"
 )
 
-var apiKey string
-
 // loginCmd represents the login command
 var loginCmd = &cobra.Command{
 	Use:   "login",
