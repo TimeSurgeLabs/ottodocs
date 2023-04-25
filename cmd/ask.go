@@ -36,12 +36,6 @@ var askCmd = &cobra.Command{
 	Short: "Ask a question about a file or repo",
 	Long: `Uses full text search to find relevant code and ask questions about said code.
 Requires a path to a repository or file as a positional argument.`,
-	Args: cobra.PositionalArgs(func(cmd *cobra.Command, args []string) error {
-		if len(args) < 1 {
-			return fmt.Errorf("requires a path to a repository or file")
-		}
-		return nil
-	}),
 	PreRun: func(cmd *cobra.Command, args []string) {
 		if verbose {
 			log.SetLevel(l.DebugLevel)
@@ -49,8 +43,15 @@ Requires a path to a repository or file as a positional argument.`,
 	},
 	Run: func(cmd *cobra.Command, args []string) {
 		var answer string
-		repoPath := args[0]
+		var repoPath string
 		var fileName string
+
+		if len(args) > 0 {
+			repoPath = args[0]
+		} else {
+			repoPath = "."
+		}
+
 		conf, err := config.Load()
 		if err != nil || conf.APIKey == "" {
 			// if the API key is not set, prompt the user to config
@@ -76,6 +77,10 @@ Requires a path to a repository or file as a positional argument.`,
 		// check if the first arg is a file or a directory
 		// if it's a file, ask a question about that file directly
 		if info.IsDir() {
+			if !git.IsGitRepo(repoPath) {
+				log.Error("Not a git repo.")
+				os.Exit(1)
+			}
 			log.Debug("Constructing repo memory...")
 			// Define a temporary path for the index file
 			testIndexPath := filepath.Join(args[0], ".index.memory")

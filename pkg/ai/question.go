@@ -23,6 +23,7 @@ func Question(files []prompt.GitFile, chatPrompt string, conf *config.Config) (s
 			break
 		}
 		prompt += "Filename: " + file.Path + "\n" + file.Contents + "\n"
+		tokens += file.Tokens
 	}
 
 	return request(constants.QUESTION_PROMPT, prompt+question, conf)

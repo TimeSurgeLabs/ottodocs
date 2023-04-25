@@ -37,6 +37,11 @@ Requires Git to be installed on the system. If a title is not provided, one will
 			os.Exit(1)
 		}
 
+		if !git.IsGitRepo(".") {
+			log.Error("Error: not a git repository")
+			os.Exit(1)
+		}
+
 		log.Info("Generating PR...")
 
 		currentBranch, err := git.GetBranch()

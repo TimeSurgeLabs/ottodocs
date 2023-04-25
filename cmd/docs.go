@@ -12,6 +12,7 @@ import (
 	"github.com/chand1012/ottodocs/pkg/config"
 	"github.com/chand1012/ottodocs/pkg/git"
 	"github.com/chand1012/ottodocs/pkg/utils"
+	l "github.com/charmbracelet/log"
 	"github.com/spf13/cobra"
 )
 
@@ -25,13 +26,17 @@ search for files in the directory and document them. If a single file is specifi
 Example:
 otto docs . -i -w 
 	`,
-	Args: cobra.ExactArgs(1),
+	PreRun: func(cmd *cobra.Command, args []string) {
+		if verbose {
+			log.SetLevel(l.DebugLevel)
+		}
+	},
 	Run: func(cmd *cobra.Command, args []string) {
-		repoPath = args[0]
-
-		if (!markdownMode || inlineMode) && outputFile != "" {
-			log.Error("Error: cannot specify an output file in inline mode")
-			os.Exit(1)
+		var repoPath string
+		if len(args) > 0 {
+			repoPath = args[0]
+		} else {
+			repoPath = "."
 		}
 
 		if markdownMode && overwriteOriginal {
@@ -60,7 +65,7 @@ otto docs . -i -w
 			os.Exit(1)
 		}
 
-		log.Debug("Loading file info...")
+		log.Info("Getting path info...")
 		info, err := os.Stat(repoPath)
 		if err != nil {
 			log.Errorf("Error getting file info: %s", err)
@@ -68,7 +73,13 @@ otto docs . -i -w
 		}
 
 		if info.IsDir() {
-			log.Debug("Getting repo...")
+			// make sure its a git repo
+			if !git.IsGitRepo(repoPath) {
+				log.Error("Error: not a git repository")
+				os.Exit(1)
+			}
+
+			log.Info("Getting repo...")
 			repo, err := git.GetRepo(repoPath, ignoreFilePath, ignoreGitignore)
 			if err != nil {
 				log.Errorf("Error: %s", err)
@@ -97,8 +108,10 @@ otto docs . -i -w
 				}
 
 				if inlineMode || !markdownMode {
+					log.Debugf("Documenting inline file %s", path)
 					contents, err = ai.SingleFile(path, fileContents, chatPrompt, conf)
 				} else {
+					log.Debugf("Documenting markdown for %s", path)
 					contents, err = ai.Markdown(path, fileContents, chatPrompt, conf)
 				}
 
@@ -108,6 +121,7 @@ otto docs . -i -w
 				}
 
 				if outputFile != "" && markdownMode {
+					log.Debug("Writing markdown to file...")
 					// write the string to the output file
 					// append if the file already exists
 					file, err := os.OpenFile(outputFile, os.O_WRONLY|os.O_CREATE|os.O_APPEND, 0644)
@@ -124,6 +138,7 @@ otto docs . -i -w
 
 					file.Close()
 				} else if overwriteOriginal {
+					log.Debug("Overwriting original file...")
 					// overwrite the original file
 					// clear the contents of the file
 					file, err := os.OpenFile(filePath, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0644)
@@ -141,10 +156,12 @@ otto docs . -i -w
 
 					file.Close()
 				} else {
+					// print the contents to stdout
 					fmt.Println(contents)
 				}
 			}
 		} else {
+			log.Info("Documenting file...")
 			if chatPrompt == "" {
 				chatPrompt = "Write documentation for the following code snippet:"
 			}
@@ -160,8 +177,10 @@ otto docs . -i -w
 			}
 
 			if inlineMode || !markdownMode {
+				log.Debug("Documenting inline...")
 				contents, err = ai.SingleFile(filePath, fileContents, chatPrompt, conf)
 			} else {
+				log.Debug("Documenting markdown...")
 				contents, err = ai.Markdown(filePath, fileContents, chatPrompt, conf)
 			}
 
@@ -171,6 +190,7 @@ otto docs . -i -w
 			}
 
 			if outputFile != "" {
+				log.Debug("Writing to file...")
 				// write the string to the output file
 				err = os.WriteFile(outputFile, []byte(contents), 0644)
 				if err != nil {
@@ -178,6 +198,7 @@ otto docs . -i -w
 					os.Exit(1)
 				}
 			} else if overwriteOriginal {
+				log.Debug("Overwriting original file...")
 				// overwrite the original file
 				// clear the contents of the file
 				file, err := os.OpenFile(filePath, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0644)
@@ -210,4 +231,5 @@ func init() {
 	docsCmd.Flags().BoolVarP(&inlineMode, "inline", "i", false, "Output in inline format")
 	docsCmd.Flags().BoolVarP(&overwriteOriginal, "overwrite", "w", false, "Overwrite the original file")
 	docsCmd.Flags().BoolVarP(&ignoreGitignore, "ignore-gitignore", "g", false, "ignore .gitignore file")
+	docsCmd.Flags().BoolVarP(&verbose, "verbose", "v", false, "Enable verbose logging")
 }

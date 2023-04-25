@@ -8,7 +8,6 @@ import (
 
 var verbose bool
 
-var repoPath string
 var preambleFile string
 var outputFile string
 var estimateTokens bool

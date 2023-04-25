@@ -8,6 +8,7 @@ import (
 	"os"
 
 	"github.com/chand1012/git2gpt/prompt"
+	"github.com/chand1012/ottodocs/pkg/git"
 	"github.com/pandodao/tokenizer-go"
 	"github.com/spf13/cobra"
 )
@@ -17,14 +18,19 @@ var promptCmd = &cobra.Command{
 	Use:   "prompt",
 	Short: "Generates a ChatGPT prompt from a given Git repo",
 	Long:  `Generates a ChatGPT prompt from a given Git repo. Specify the path to the repo as the first positional argument.`,
-	Args: cobra.PositionalArgs(func(cmd *cobra.Command, args []string) error {
-		if len(args) < 1 {
-			return fmt.Errorf("requires a path to a repository")
-		}
-		return nil
-	}),
 	Run: func(cmd *cobra.Command, args []string) {
-		repoPath = args[0]
+		var repoPath string
+		if len(args) > 0 {
+			repoPath = args[0]
+		} else {
+			repoPath = "."
+		}
+
+		if !git.IsGitRepo(repoPath) {
+			log.Error("Error: not a git repository")
+			os.Exit(1)
+		}
+
 		ignoreList := prompt.GenerateIgnoreList(repoPath, ignoreFilePath, !ignoreGitignore)
 		repo, err := prompt.ProcessGitRepo(repoPath, ignoreList)
 		if err != nil {

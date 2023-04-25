@@ -33,6 +33,11 @@ var commitCmd = &cobra.Command{
 			os.Exit(1)
 		}
 
+		if !git.IsGitRepo(".") {
+			log.Error("Error: not a git repository")
+			os.Exit(1)
+		}
+
 		dirty, err := git.IsDirty()
 		if err != nil {
 			log.Error(err)
