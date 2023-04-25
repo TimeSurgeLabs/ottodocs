@@ -6,13 +6,21 @@ package cmd
 import (
 	"fmt"
 	"os"
+	"sort"
 
 	"github.com/chand1012/ottodocs/pkg/ai"
+	"github.com/chand1012/ottodocs/pkg/calc"
 	"github.com/chand1012/ottodocs/pkg/config"
 	"github.com/chand1012/ottodocs/pkg/git"
 	l "github.com/charmbracelet/log"
 	"github.com/spf13/cobra"
 )
+
+type fileDiff struct {
+	Diff   string
+	File   string
+	Tokens int
+}
 
 // commitCmd represents the commit command
 var commitCmd = &cobra.Command{
@@ -57,8 +65,77 @@ var commitCmd = &cobra.Command{
 			os.Exit(1)
 		}
 
+		if diff == "" {
+			log.Error("No changes to commit.")
+			os.Exit(1)
+		}
+
+		log.Debug("Calculating diff tokens...")
+		diffTokens, err := calc.PreciseTokens(diff)
+		if err != nil {
+			log.Error(err)
+			os.Exit(1)
+		}
+
+		var msg string
+
+		if diffTokens > calc.GetMaxTokens(conf.Model) {
+			log.Debugf("Diff tokens %d is greater than the model maximum of tokens %d", diffTokens, calc.GetMaxTokens(conf.Model))
+			log.Debug("Getting changed files...")
+			files, err := git.GetChangedFiles()
+			if err != nil {
+				log.Error(err)
+				os.Exit(1)
+			}
+
+			var diffs []fileDiff
+
+			for _, file := range files {
+				if file == "" {
+					continue
+				}
+				log.Debugf("Getting diff for %s...", file)
+				diff, err := git.GetFileDiff(file)
+				if err != nil {
+					log.Error(err)
+					os.Exit(1)
+				}
+
+				diffs = append(diffs, fileDiff{
+					Diff:   diff,
+					File:   file,
+					Tokens: calc.EstimateTokens(diff),
+				})
+			}
+
+			log.Debugf("Got %d diffs", len(diffs))
+			log.Debug("Sorting diffs...")
+			// sort diffs by tokens
+			sort.Slice(diffs, func(i, j int) bool {
+				return diffs[i].Tokens < diffs[j].Tokens
+			})
+
+			log.Debug("Combining diffs...")
+			// start combining the diffs until we are under the token limit
+			var combinedDiff string
+			var tokenTotal int
+			maxTokens := calc.GetMaxTokens(conf.Model) - 500
+			log.Debugf("Max tokens: %d", maxTokens)
+			for _, diff := range diffs {
+				if tokenTotal+diff.Tokens > maxTokens {
+					break
+				}
+				combinedDiff += diff.Diff + "\n"
+				tokenTotal += diff.Tokens
+			}
+			diff = combinedDiff
+			log.Debugf("Combined diff tokens: %d", tokenTotal)
+		} else {
+			log.Debugf("Diff tokens %d is less than the model maximum of tokens %d", diffTokens, calc.GetMaxTokens(conf.Model))
+		}
+
 		log.Debug("Sending diff to ChatGPT...")
-		msg, err := ai.CommitMessage(diff, conventional, conf)
+		msg, err = ai.CommitMessage(diff, conventional, conf)
 		if err != nil {
 			log.Error(err)
 			os.Exit(1)
