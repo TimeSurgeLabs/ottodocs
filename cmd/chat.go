@@ -5,25 +5,31 @@ package cmd
 
 import (
 	"context"
+	"errors"
 	"fmt"
+	"io"
 	"os"
 
+	"github.com/chand1012/ottodocs/pkg/calc"
 	"github.com/chand1012/ottodocs/pkg/config"
+	"github.com/chand1012/ottodocs/pkg/utils"
 	l "github.com/charmbracelet/log"
 	"github.com/sashabaranov/go-openai"
 	"github.com/spf13/cobra"
 )
 
-var question string
+// this should be improved with a proper vector db
+// so that proper context can be added
+
+// for now it just removes the oldest message
+// when it reaches the max context size
 
 // chatCmd represents the chat command
 var chatCmd = &cobra.Command{
 	Use:   "chat",
-	Short: "Ask ChatGPT a question from the command line.",
-	Long: `Ask ChatGPT a question from the command line.
-
-If '-q' is not specified, the user will be prompted to enter a question.
-	`,
+	Short: "Talk with ChatGPT from the command line!",
+	Long: `Talk with ChatGPT from the command line!
+No code context is passed in this mode. Emulates web chat.`,
 	PreRun: func(cmd *cobra.Command, args []string) {
 		if verbose {
 			log.SetLevel(l.DebugLevel)
@@ -38,43 +44,96 @@ If '-q' is not specified, the user will be prompted to enter a question.
 			os.Exit(1)
 		}
 
+		// all messages in the conversation
+		var messages []openai.ChatCompletionMessage
+		var recvString string
+
 		client := openai.NewClient(conf.APIKey)
 
-		// if the question is not provided, prompt the user for it
-		if question == "" {
-			fmt.Print("What would you like to chat ChatGPT?\n> ")
-			fmt.Scanln(&question)
+		fmt.Println("ChatGPT: Hello! I am ChatGPT. Use Ctrl+C to exit at any time.")
+
+		for {
+			question, err := utils.Input("You: ")
+			if err != nil {
+				log.Error(err)
+				os.Exit(1)
+			}
+
+			fmt.Print("ChatGPT: ")
+
+			log.Debugf("Adding question '%s' to context...", question)
+
+			messages = append(messages, openai.ChatCompletionMessage{
+				Content: question,
+				Role:    openai.ChatMessageRoleUser,
+			})
+
+			// get the length of all the messages
+			messageStrings := make([]string, len(messages))
+			for i, message := range messages {
+				messageStrings[i] = message.Content
+			}
+
+			tokens, err := calc.PreciseTokens(messageStrings...)
+			if err != nil {
+				log.Error(err)
+				os.Exit(1)
+			}
+
+			if tokens > calc.GetMaxTokens(conf.Model) {
+				for tokens > calc.GetMaxTokens(conf.Model) {
+					messages = messages[1:]
+					messageStrings = messageStrings[1:]
+					tokens, err = calc.PreciseTokens(messageStrings...)
+					if err != nil {
+						log.Error(err)
+						os.Exit(1)
+					}
+				}
+			}
+
+			stream, err := client.CreateChatCompletionStream(context.Background(), openai.ChatCompletionRequest{
+				Model:    conf.Model,
+				Messages: messages,
+			})
+
+			if err != nil {
+				log.Error(err)
+				os.Exit(1)
+			}
+
+			defer stream.Close()
+
+			for {
+				msg, err := stream.Recv()
+				if errors.Is(err, io.EOF) {
+					fmt.Println("")
+					// add the last message to the context
+					messages = append(messages, openai.ChatCompletionMessage{
+						Content: recvString,
+						Role:    openai.ChatMessageRoleAssistant,
+					})
+					recvString = ""
+					break
+				} else if err != nil {
+					log.Error(err)
+					os.Exit(1)
+				}
+
+				if len(msg.Choices) == 1 {
+					fmt.Print(msg.Choices[0].Delta.Content)
+					recvString += msg.Choices[0].Delta.Content
+				} else {
+					log.Error("Received multiple choices from ChatGPT.")
+					os.Exit(1)
+				}
+			}
 		}
-
-		log.Debugf("Sending question: %s", question)
-
-		resp, err := client.CreateChatCompletion(context.Background(), openai.ChatCompletionRequest{
-			Model: conf.Model,
-			Messages: []openai.ChatCompletionMessage{
-				{
-					Content: question,
-					Role:    openai.ChatMessageRoleUser,
-				},
-			},
-		})
-
-		if err != nil {
-			log.Error(err)
-			os.Exit(1)
-		}
-
-		if len(resp.Choices) == 0 {
-			log.Error("No choices returned")
-			os.Exit(1)
-		}
-
-		fmt.Println(resp.Choices[0].Message.Content)
 	},
 }
 
 func init() {
 	RootCmd.AddCommand(chatCmd)
 
-	chatCmd.Flags().StringVarP(&question, "question", "q", "", "Question to chat ChatGPT")
 	chatCmd.Flags().BoolVarP(&verbose, "verbose", "v", false, "Verbose output")
 }

@@ -7,16 +7,19 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"strconv"
 
 	g "github.com/chand1012/git2gpt/prompt"
 	"github.com/chand1012/memory"
+	l "github.com/charmbracelet/log"
+	"github.com/spf13/cobra"
+
 	"github.com/chand1012/ottodocs/pkg/ai"
 	"github.com/chand1012/ottodocs/pkg/calc"
 	"github.com/chand1012/ottodocs/pkg/config"
 	"github.com/chand1012/ottodocs/pkg/gh"
 	"github.com/chand1012/ottodocs/pkg/git"
-	l "github.com/charmbracelet/log"
-	"github.com/spf13/cobra"
+	"github.com/chand1012/ottodocs/pkg/utils"
 )
 
 // issueCmd represents the issue command
@@ -38,16 +41,31 @@ var issueCmd = &cobra.Command{
 		}
 
 		if issuePRNumber == 0 {
+			log.Debug("No issue number provided")
 			// prompt for issue number
-			fmt.Print("Please provide an issue number: ")
-			fmt.Scanln(&issuePRNumber)
+			inputPRNumber, err := utils.Input("Please provide an issue number: ")
+			if err != nil {
+				log.Errorf("Error getting input: %s", err)
+				os.Exit(1)
+			}
+			issuePRNumber, err = strconv.Atoi(inputPRNumber)
+			if err != nil {
+				log.Errorf("Error converting input to int: %s", err)
+				os.Exit(1)
+			}
 		}
 
 		if question == "" {
+			log.Debug("No question provided")
 			// prompt for question
-			fmt.Print("Please provide a question: ")
-			fmt.Scanln(&question)
+			question, err = utils.Input("Please provide a question: ")
+			if err != nil {
+				log.Errorf("Error getting input: %s", err)
+				os.Exit(1)
+			}
 		}
+
+		log.Debugf("Question: %s", question)
 
 		remote, err := git.GetRemote("origin")
 		if err != nil {
@@ -55,6 +73,7 @@ var issueCmd = &cobra.Command{
 			os.Exit(1)
 		}
 
+		log.Debug("Getting repo info...")
 		// get repo and owner
 		owner, repo, err := git.ExtractOriginInfo(remote)
 		if err != nil {
@@ -62,6 +81,8 @@ var issueCmd = &cobra.Command{
 			os.Exit(1)
 		}
 
+		log.Debugf("Owner: %s, Repo: %s", owner, repo)
+		log.Debug("Getting issue...")
 		// get issue
 		issue, err := gh.GetIssue(owner, repo, issuePRNumber, c)
 		if err != nil {
@@ -71,6 +92,8 @@ var issueCmd = &cobra.Command{
 
 		body := issue.Issue.Body
 		title := issue.Issue.Title
+
+		log.Debug("Constructing prompt...")
 
 		var prompt string
 		// generate a prompt
@@ -88,12 +111,14 @@ var issueCmd = &cobra.Command{
 		}
 		tokens += suffixTokens
 
+		log.Debug("Checking initial prompt length...")
 		if tokens > calc.GetMaxTokens(c.Model) {
 			log.Errorf("Error: prompt is too long. Max tokens: %d, prompt tokens: %d", calc.GetMaxTokens(c.Model), tokens)
 			os.Exit(1)
 		}
 
 		if useComments {
+			log.Debug("Using comments...")
 			// make the prompt just the issue body to start
 			for _, comment := range issue.Comments {
 				comment := fmt.Sprintf("\n\nComment:\nAuthor: %s\nBody: %s", comment.Username, comment.Body)
@@ -108,8 +133,8 @@ var issueCmd = &cobra.Command{
 				prompt += comment
 				tokens += commentTokens
 			}
-			prompt += suffix
 		} else {
+			log.Debug("Using repo contents...")
 			// get the repo context here
 			repoFiles, err := git.GetRepo(".", ".gptignore", false) // gptignore isn't working AGAIN
 			if err != nil {
@@ -117,12 +142,14 @@ var issueCmd = &cobra.Command{
 				os.Exit(1)
 			}
 
+			log.Debug("Constructing memory...")
 			m, _, err := memory.New(filepath.Join(".", ".index.memory"))
 			if err != nil {
 				log.Errorf("Error creating memory: %s", err)
 				os.Exit(1)
 			}
 
+			log.Debug("Adding files to memory...")
 			for _, file := range repoFiles.Files {
 				err = m.Add(file.Path, file.Contents)
 				if err != nil {
@@ -131,14 +158,17 @@ var issueCmd = &cobra.Command{
 				}
 			}
 
+			log.Debug("Searching memory...")
 			results, err := m.Search(fmt.Sprintf("%s\n%s\n%s", title, body, question))
 			if err != nil {
 				log.Errorf("Error searching memory: %s", err)
 				os.Exit(1)
 			}
 
+			log.Debug("Destroying memory...")
 			m.Destroy()
 
+			log.Debug("Sorting results...")
 			sorted := sortByScore(results)
 			log.Debug("Getting file contents...")
 			var files []g.GitFile
@@ -155,9 +185,11 @@ var issueCmd = &cobra.Command{
 				os.Exit(1)
 			}
 
+			log.Debug("Adding files to prompt...")
 			// keep adding files until we hit the max tokens
 			for _, file := range files {
-				fileTokens, err := calc.PreciseTokens(file.Contents)
+				promptAdd := fmt.Sprintf("\n\nFile: %s\n%s", file.Path, file.Contents)
+				fileTokens, err := calc.PreciseTokens(promptAdd)
 				if err != nil {
 					log.Errorf("Error getting tokens: %s", err)
 					os.Exit(1)
@@ -165,16 +197,34 @@ var issueCmd = &cobra.Command{
 				if tokens+fileTokens > calc.GetMaxTokens(c.Model) {
 					break
 				}
-				prompt += fmt.Sprintf("\n\nFile: %s\n%s", file.Path, file.Contents)
+				prompt += promptAdd
 				tokens += fileTokens
 			}
 		}
 
+		prompt += suffix
+
+		if countFinalTokens {
+			log.Debug("Counting final prompt tokens...")
+			tokens, err := calc.PreciseTokens(prompt)
+			if err != nil {
+				log.Errorf("Error getting tokens: %s", err)
+				os.Exit(1)
+			}
+			if verbose {
+				log.Debugf("Final prompt tokens: %d\n", tokens)
+			} else {
+				fmt.Printf("Final prompt tokens: %d\n", tokens)
+			}
+		}
+
 		if promptOnly {
+			log.Debug("Prompt only mode, printing prompt and exiting.")
 			fmt.Println(prompt)
 			os.Exit(0)
 		}
 
+		log.Debug("Asking ChatGPT...")
 		// ask ChatGPT
 		resp, err := ai.SimpleRequest(prompt, c)
 		if err != nil {
@@ -189,9 +239,10 @@ var issueCmd = &cobra.Command{
 func init() {
 	RootCmd.AddCommand(issueCmd)
 
-	issueCmd.Flags().BoolVarP(&verbose, "verbose", "v", false, "verbose output")
 	issueCmd.Flags().IntVarP(&issuePRNumber, "number", "n", 0, "the number of the issue to get")
 	issueCmd.Flags().StringVarP(&question, "question", "q", "", "the question to ask ChatGPT")
 	issueCmd.Flags().BoolVarP(&useComments, "comments", "c", false, "use comments instead of git repo for context")
 	issueCmd.Flags().BoolVarP(&promptOnly, "prompt-only", "p", false, "only generate a prompt, don't ask ChatGPT")
+	issueCmd.Flags().BoolVarP(&verbose, "verbose", "v", false, "verbose output")
+	issueCmd.Flags().BoolVar(&countFinalTokens, "count", false, "count the number of tokens")
 }

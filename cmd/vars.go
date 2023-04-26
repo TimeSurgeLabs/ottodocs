@@ -7,6 +7,7 @@ import (
 )
 
 var verbose bool
+var question string
 
 var preambleFile string
 var outputFile string
@@ -37,6 +38,7 @@ var remote string
 var issuePRNumber int
 var useComments bool
 var promptOnly bool
+var countFinalTokens bool
 
 var log = l.NewWithOptions(os.Stderr, l.Options{
 	Level:           l.InfoLevel,
