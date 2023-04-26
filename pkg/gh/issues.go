@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"strings"
 
 	"github.com/chand1012/ottodocs/pkg/config"
 )
@@ -63,6 +64,23 @@ func GetIssue(owner, repo string, issueNumber int, conf *config.Config) (*IssueW
 		return nil, err
 	}
 
+	for i := range comments {
+		comment := &comments[i]
+		if comment.Body != "" {
+			// Extract the username from the comment URL
+			if strings.HasPrefix(comment.Body, "https://github.com/") {
+				usernameStart := strings.Index(comment.Body, "/")
+				if usernameStart != -1 {
+					usernameEnd := strings.Index(comment.Body[usernameStart+1:], "/")
+					if usernameEnd != -1 {
+						username := comment.Body[usernameStart+1 : usernameStart+1+usernameEnd]
+						comment.Username = username
+					}
+				}
+			}
+		}
+	}
+
 	issueWithComments := &IssueWithComments{
 		Issue:    issue,
 		Comments: comments,
@@ -90,4 +108,6 @@ type Comment struct {
 	Body      string `json:"body"`
 	CreatedAt string `json:"created_at"`
 	UpdatedAt string `json:"updated_at"`
+	// The username of the user who made the comment. This is optional.
+	Username string `json:"username,omitempty"`
 }

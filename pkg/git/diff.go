@@ -18,6 +18,14 @@ func IsDirty() (bool, error) {
 	return !strings.Contains(status, "nothing to commit, working tree clean"), nil
 }
 
+func IsClean() (bool, error) {
+	status, err := Status()
+	if err != nil {
+		return false, err
+	}
+	return strings.Contains(status, "nothing to commit, working tree clean"), nil
+}
+
 func GetChangedFiles() ([]string, error) {
 	resp, err := git("diff", "--name-only")
 	if err != nil {

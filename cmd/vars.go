@@ -34,6 +34,10 @@ var apiKey string
 var ghToken string
 var remote string
 
+var issuePRNumber int
+var useComments bool
+var promptOnly bool
+
 var log = l.NewWithOptions(os.Stderr, l.Options{
 	Level:           l.InfoLevel,
 	ReportTimestamp: false,
