@@ -4,7 +4,6 @@ Copyright © 2023 Chandler <chandler@chand1012.dev>
 package cmd
 
 import (
-	"fmt"
 	"os"
 
 	l "github.com/charmbracelet/log"
@@ -13,6 +12,7 @@ import (
 	"github.com/chand1012/ottodocs/pkg/ai"
 	"github.com/chand1012/ottodocs/pkg/config"
 	"github.com/chand1012/ottodocs/pkg/shell"
+	"github.com/chand1012/ottodocs/pkg/utils"
 )
 
 // cmdCmd represents the cmd command
@@ -49,14 +49,18 @@ This command is only supported on MacOS and Linux using Bash or Zsh. Windows and
 		}
 
 		log.Debug("Asking ChatGPT for a command...")
-		resp, err := ai.CmdQuestion(history, chatPrompt, conf)
+		stream, err := ai.CmdQuestion(history, chatPrompt, conf)
 
 		if err != nil {
 			log.Error(err)
 			os.Exit(1)
 		}
 
-		fmt.Println("Answer:", resp)
+		_, err = utils.PrintChatCompletionStream(stream)
+		if err != nil {
+			log.Error(err)
+			os.Exit(1)
+		}
 	},
 }
 

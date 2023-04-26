@@ -169,7 +169,7 @@ var issueCmd = &cobra.Command{
 			m.Destroy()
 
 			log.Debug("Sorting results...")
-			sorted := sortByScore(results)
+			sorted := utils.SortByAverage(results)
 			log.Debug("Getting file contents...")
 			var files []g.GitFile
 			for _, result := range sorted {
@@ -226,13 +226,18 @@ var issueCmd = &cobra.Command{
 
 		log.Debug("Asking ChatGPT...")
 		// ask ChatGPT
-		resp, err := ai.SimpleRequest(prompt, c)
+		stream, err := ai.SimpleStreamRequest(prompt, c)
 		if err != nil {
 			log.Errorf("Error getting response: %s", err)
 			os.Exit(1)
 		}
 
-		fmt.Println(resp)
+		fmt.Print("ChatGPT: ")
+		_, err = utils.PrintChatCompletionStream(stream)
+		if err != nil {
+			log.Errorf("Error printing response: %s", err)
+			os.Exit(1)
+		}
 	},
 }
 

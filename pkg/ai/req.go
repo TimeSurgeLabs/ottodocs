@@ -39,6 +39,27 @@ func request(systemMsg, userMsg string, conf *config.Config) (string, error) {
 	return resp.Choices[0].Message.Content, nil
 }
 
+func requestStream(systemMsg, userMsg string, conf *config.Config) (*openai.ChatCompletionStream, error) {
+	c := openai.NewClient(conf.APIKey)
+	ctx := context.Background()
+
+	req := openai.ChatCompletionRequest{
+		Model: conf.Model,
+		Messages: []openai.ChatCompletionMessage{
+			{
+				Content: systemMsg,
+				Role:    openai.ChatMessageRoleSystem,
+			},
+			{
+				Content: userMsg,
+				Role:    openai.ChatMessageRoleUser,
+			},
+		},
+	}
+
+	return c.CreateChatCompletionStream(ctx, req)
+}
+
 func SimpleRequest(prompt string, conf *config.Config) (string, error) {
 	c := openai.NewClient(conf.APIKey)
 	ctx := context.Background()
@@ -63,4 +84,21 @@ func SimpleRequest(prompt string, conf *config.Config) (string, error) {
 	}
 
 	return resp.Choices[0].Message.Content, nil
+}
+
+func SimpleStreamRequest(prompt string, conf *config.Config) (*openai.ChatCompletionStream, error) {
+	c := openai.NewClient(conf.APIKey)
+	ctx := context.Background()
+
+	req := openai.ChatCompletionRequest{
+		Model: conf.Model,
+		Messages: []openai.ChatCompletionMessage{
+			{
+				Content: prompt,
+				Role:    openai.ChatMessageRoleUser,
+			},
+		},
+	}
+
+	return c.CreateChatCompletionStream(ctx, req)
 }

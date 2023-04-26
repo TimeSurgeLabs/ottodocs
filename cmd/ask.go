@@ -7,12 +7,11 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
-	"sort"
-	"strings"
 
 	"github.com/chand1012/git2gpt/prompt"
 	"github.com/chand1012/memory"
 	l "github.com/charmbracelet/log"
+	"github.com/sashabaranov/go-openai"
 	"github.com/spf13/cobra"
 
 	"github.com/chand1012/ottodocs/pkg/ai"
@@ -21,14 +20,6 @@ import (
 	"github.com/chand1012/ottodocs/pkg/git"
 	"github.com/chand1012/ottodocs/pkg/utils"
 )
-
-// move this to memory package eventually
-func sortByScore(fragments []memory.MemoryFragment) []memory.MemoryFragment {
-	sort.Slice(fragments, func(i, j int) bool {
-		return fragments[i].Score > fragments[j].Score
-	})
-	return fragments
-}
 
 // askCmd represents the ask command
 var askCmd = &cobra.Command{
@@ -42,7 +33,7 @@ Requires a path to a repository or file as a positional argument.`,
 		}
 	},
 	Run: func(cmd *cobra.Command, args []string) {
-		var answer string
+		var stream *openai.ChatCompletionStream
 		var repoPath string
 		var fileName string
 
@@ -62,10 +53,11 @@ Requires a path to a repository or file as a positional argument.`,
 
 		if chatPrompt == "" {
 			log.Debug("User did not enter a question. Prompting for one...")
-			fmt.Println("Please enter a question: ")
-			fmt.Scanln(&chatPrompt)
-			// strip the newline character
-			chatPrompt = strings.TrimRight(chatPrompt, " \n")
+			chatPrompt, err = utils.Input("You: ")
+			if err != nil {
+				log.Errorf("Error prompting for question: %s", err)
+				os.Exit(1)
+			}
 		}
 
 		log.Debug("Getting file contents...")
@@ -83,7 +75,7 @@ Requires a path to a repository or file as a positional argument.`,
 			}
 			log.Debug("Constructing repo memory...")
 			// Define a temporary path for the index file
-			testIndexPath := filepath.Join(args[0], ".index.memory")
+			testIndexPath := filepath.Join(repoPath, ".index.memory")
 
 			log.Debug("Creating memory index...")
 			// Create a new memory index
@@ -123,7 +115,7 @@ Requires a path to a repository or file as a positional argument.`,
 			m.Destroy()
 
 			log.Debug("Sorting results...")
-			sortedFragments := sortByScore(results)
+			sortedFragments := utils.SortByAverage(results)
 
 			log.Debug("Getting file contents...")
 			var files []prompt.GitFile
@@ -131,6 +123,7 @@ Requires a path to a repository or file as a positional argument.`,
 				for _, file := range repo.Files {
 					if file.Path == result.ID {
 						files = append(files, file)
+						log.Debugf("Found file: %s Score: %f Average: %f", file.Path, result.Score, result.Avg)
 					}
 				}
 			}
@@ -141,7 +134,7 @@ Requires a path to a repository or file as a positional argument.`,
 			}
 
 			log.Debug("Asking chatGPT question...")
-			answer, err = ai.Question(files, chatPrompt, conf)
+			stream, err = ai.Question(files, chatPrompt, conf, verbose)
 			if err != nil {
 				log.Errorf("Error asking question: %s", err)
 				os.Exit(1)
@@ -171,14 +164,19 @@ Requires a path to a repository or file as a positional argument.`,
 			}
 
 			log.Debug("Asking chatGPT question...")
-			answer, err = ai.Question(files, chatPrompt, conf)
+			stream, err = ai.Question(files, chatPrompt, conf, verbose)
 			if err != nil {
 				log.Errorf("Error asking question: %s", err)
 				os.Exit(1)
 			}
 		}
 
-		fmt.Println("Answer:", answer)
+		fmt.Print("ChatGPT: ")
+		_, err = utils.PrintChatCompletionStream(stream)
+		if err != nil {
+			log.Errorf("Error printing chat completion stream: %s", err)
+			os.Exit(1)
+		}
 	},
 }
 

@@ -5,9 +5,7 @@ package cmd
 
 import (
 	"context"
-	"errors"
 	"fmt"
-	"io"
 	"os"
 
 	"github.com/chand1012/ottodocs/pkg/calc"
@@ -46,7 +44,6 @@ No code context is passed in this mode. Emulates web chat.`,
 
 		// all messages in the conversation
 		var messages []openai.ChatCompletionMessage
-		var recvString string
 
 		client := openai.NewClient(conf.APIKey)
 
@@ -102,32 +99,16 @@ No code context is passed in this mode. Emulates web chat.`,
 				os.Exit(1)
 			}
 
-			defer stream.Close()
-
-			for {
-				msg, err := stream.Recv()
-				if errors.Is(err, io.EOF) {
-					fmt.Println("")
-					// add the last message to the context
-					messages = append(messages, openai.ChatCompletionMessage{
-						Content: recvString,
-						Role:    openai.ChatMessageRoleAssistant,
-					})
-					recvString = ""
-					break
-				} else if err != nil {
-					log.Error(err)
-					os.Exit(1)
-				}
-
-				if len(msg.Choices) == 1 {
-					fmt.Print(msg.Choices[0].Delta.Content)
-					recvString += msg.Choices[0].Delta.Content
-				} else {
-					log.Error("Received multiple choices from ChatGPT.")
-					os.Exit(1)
-				}
+			completeStream, err := utils.PrintChatCompletionStream(stream)
+			if err != nil {
+				log.Error(err)
+				os.Exit(1)
 			}
+
+			messages = append(messages, openai.ChatCompletionMessage{
+				Content: completeStream,
+				Role:    openai.ChatMessageRoleAssistant,
+			})
 		}
 	},
 }

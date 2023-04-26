@@ -4,9 +4,10 @@ import (
 	"github.com/chand1012/ottodocs/pkg/calc"
 	"github.com/chand1012/ottodocs/pkg/config"
 	"github.com/chand1012/ottodocs/pkg/constants"
+	"github.com/sashabaranov/go-openai"
 )
 
-func CmdQuestion(history []string, chatPrompt string, conf *config.Config) (string, error) {
+func CmdQuestion(history []string, chatPrompt string, conf *config.Config) (*openai.ChatCompletionStream, error) {
 	questionNoHistory := "\nQuestion: " + chatPrompt + "\n\nAnswer:"
 	historyQuestion := "Shell History:\n"
 
@@ -26,5 +27,5 @@ func CmdQuestion(history []string, chatPrompt string, conf *config.Config) (stri
 
 	question := historyQuestion + questionNoHistory
 
-	return request(constants.COMMAND_QUESTION_PROMPT, question, conf)
+	return requestStream(constants.COMMAND_QUESTION_PROMPT, question, conf)
 }
