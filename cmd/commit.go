@@ -59,7 +59,7 @@ var commitCmd = &cobra.Command{
 			os.Exit(1)
 		}
 
-		log.Info("Generating commit message...")
+		log.Debug("Generating commit message...")
 		log.Debug("Getting git diff...")
 		diff, err := git.Diff()
 		if err != nil {
@@ -137,15 +137,35 @@ var commitCmd = &cobra.Command{
 		}
 
 		log.Debug("Sending diff to ChatGPT...")
-		msg, err = ai.CommitMessage(diff, conventional, conf)
+		fmt.Print("Commit Msg: ")
+		stream, err := ai.CommitMessage(diff, conventional, conf)
 		if err != nil {
 			log.Error(err)
 			os.Exit(1)
 		}
 
+		msg, err = utils.PrintChatCompletionStream(stream)
+		if err != nil {
+			log.Errorf("Error printing chat completion stream: %s", err)
+			os.Exit(1)
+		}
+
+		if len(msg) > 75 {
+			// truncate to the first period or the first newline
+			newMsg := msg
+			if strings.Contains(msg, "\n") {
+				newMsg = strings.Split(msg, "\n")[0]
+			} else if strings.Contains(msg, ".") {
+				newMsg = strings.Split(msg, ".")[0]
+			}
+			if len(newMsg) != len(msg) {
+				fmt.Println("Truncated commit message: ", newMsg)
+				msg = newMsg
+			}
+		}
+
 		if auto || push {
 			if !force {
-				log.Info("Commit message:", msg)
 				confirm, err := utils.Input("Is this okay? (y/n): ")
 				if err != nil {
 					log.Errorf("Error getting input: %s", err)
@@ -154,11 +174,11 @@ var commitCmd = &cobra.Command{
 				// convert to lowercase
 				confirm = strings.ToLower(confirm)
 				if confirm != "y" {
-					log.Info("Exiting...")
+					fmt.Println("Exiting...")
 					os.Exit(0)
 				}
 			}
-			log.Info("Adding and committing...")
+			fmt.Println("Adding and committing...")
 			output, err := git.AddAll()
 			if err != nil {
 				log.Errorf("Error adding files: %s", err)
@@ -172,7 +192,7 @@ var commitCmd = &cobra.Command{
 			}
 			fmt.Println(output)
 			if push {
-				log.Info("Pushing...")
+				fmt.Println("Pushing...")
 				output, err = git.Push()
 				if err != nil {
 					log.Errorf("Error pushing: %s", err)

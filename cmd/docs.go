@@ -65,7 +65,7 @@ otto docs . -i -w
 			os.Exit(1)
 		}
 
-		log.Info("Getting path info...")
+		fmt.Println("Getting path info...")
 		info, err := os.Stat(repoPath)
 		if err != nil {
 			log.Errorf("Error getting file info: %s", err)
@@ -79,7 +79,7 @@ otto docs . -i -w
 				os.Exit(1)
 			}
 
-			log.Info("Getting repo...")
+			fmt.Println("Getting repo...")
 			repo, err := git.GetRepo(repoPath, ignoreFilePath, ignoreGitignore)
 			if err != nil {
 				log.Errorf("Error: %s", err)
@@ -161,7 +161,7 @@ otto docs . -i -w
 				}
 			}
 		} else {
-			log.Info("Documenting file...")
+			fmt.Println("Documenting file...")
 			if chatPrompt == "" {
 				chatPrompt = "Write documentation for the following code snippet:"
 			}

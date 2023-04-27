@@ -42,7 +42,7 @@ Requires Git to be installed on the system. If a title is not provided, one will
 			os.Exit(1)
 		}
 
-		log.Info("Generating PR...")
+		fmt.Println("Generating PR...")
 
 		currentBranch, err := git.GetBranch()
 		if err != nil {
@@ -151,10 +151,25 @@ Requires Git to be installed on the system. If a title is not provided, one will
 			os.Exit(1)
 		}
 
+		fmt.Println("Title: ", title)
+		fmt.Println("Body: ", body)
+		fmt.Println("Branch: ", base)
+
 		if !push {
-			fmt.Println("Title: ", title)
-			fmt.Println("Body: ", body)
 			os.Exit(0)
+		}
+
+		if !force {
+			confirm, err := utils.Input("Publish PR? (y/n): ")
+			if err != nil {
+				log.Errorf("Error getting input: %s", err)
+				os.Exit(1)
+			}
+			confirm = strings.ToLower(confirm)
+			if confirm != "y" {
+				fmt.Println("Exiting...")
+				os.Exit(0)
+			}
 		}
 
 		// get the origin remote
@@ -181,7 +196,7 @@ Requires Git to be installed on the system. If a title is not provided, one will
 		data["head"] = currentBranch
 		data["base"] = base
 
-		log.Info("Opening pull request...")
+		fmt.Println("Opening pull request...")
 		prNumber, err := gh.OpenPullRequest(data, owner, repo, c)
 		if err != nil {
 			log.Errorf("Error opening pull request: %s", err)
@@ -202,4 +217,5 @@ func init() {
 	prCmd.Flags().StringVarP(&remote, "remote", "r", "origin", "Remote for creating the pull request. Only works with GitHub.")
 	prCmd.Flags().BoolVarP(&push, "publish", "p", false, "Create the pull request. Must have a remote named \"origin\"")
 	prCmd.Flags().BoolVarP(&verbose, "verbose", "v", false, "Verbose output")
+	prCmd.Flags().BoolVarP(&force, "force", "f", false, "Force the creation of the pull request")
 }

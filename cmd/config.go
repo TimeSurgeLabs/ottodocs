@@ -4,6 +4,7 @@ Copyright © 2023 Chandler <chandler@chand1012.dev>
 package cmd
 
 import (
+	"fmt"
 	"os"
 
 	"github.com/chand1012/ottodocs/pkg/config"
@@ -44,13 +45,13 @@ GitHub Token Generation: https://github.com/settings/tokens
 
 		// if the api key is provided, set it
 		if apiKey != "" {
-			log.Info("Setting API key...")
+			fmt.Println("Setting API key...")
 			c.APIKey = apiKey
 		}
 
 		// if the model is provided, set it
 		if model != "" {
-			log.Info("Setting model...")
+			fmt.Println("Setting model...")
 			if !utils.Contains(VALID_MODELS, model) {
 				log.Errorf("Invalid model: %s", model)
 				log.Errorf("Valid models are: %s", VALID_MODELS)
@@ -61,7 +62,7 @@ GitHub Token Generation: https://github.com/settings/tokens
 
 		// if the gh token is provided, set it
 		if ghToken != "" {
-			log.Info("Setting GitHub token...")
+			fmt.Println("Setting GitHub token...")
 			c.GHToken = ghToken
 		}
 
@@ -72,7 +73,7 @@ GitHub Token Generation: https://github.com/settings/tokens
 			os.Exit(1)
 		}
 
-		log.Info("Configuration saved successfully!")
+		fmt.Println("Configuration saved successfully!")
 	},
 }
 

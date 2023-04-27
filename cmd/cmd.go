@@ -4,6 +4,7 @@ Copyright © 2023 Chandler <chandler@chand1012.dev>
 package cmd
 
 import (
+	"fmt"
 	"os"
 
 	l "github.com/charmbracelet/log"
@@ -42,7 +43,7 @@ This command is only supported on MacOS and Linux using Bash or Zsh. Windows and
 			chatPrompt = "What command do you recommend I use next?"
 		}
 
-		log.Info("Thinking....")
+		fmt.Println("Thinking....")
 		log.Debug("Getting shell history...")
 		history, err := shell.GetHistory(100)
 		if err != nil {
