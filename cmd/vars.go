@@ -6,6 +6,7 @@ import (
 	l "github.com/charmbracelet/log"
 )
 
+var force bool
 var verbose bool
 var question string
 

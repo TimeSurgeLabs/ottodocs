@@ -15,6 +15,9 @@ import (
 	"github.com/chand1012/ottodocs/pkg/utils"
 )
 
+// in the future this should fully wrap the shell
+// get both inputs and outputs for best results
+
 // cmdCmd represents the cmd command
 var cmdCmd = &cobra.Command{
 	Use:   "cmd",

@@ -17,11 +17,16 @@ var VALID_MODELS = []string{"gpt-4", "gpt-4-0314", "gpt-4-32k", "gpt-4-32k-0314"
 var configCmd = &cobra.Command{
 	Use:   "config",
 	Short: "Configures ottodocs",
-	Long: `Configures ottodocs. Allows user to specify API Keys and the model with a single command.
+	Long: `Configures ottodocs. Allows user to specify OpenAI API Key, GitHub Token, and the model with a single command.
 
-	Default model is gpt-3.5-turbo.
-	Valid models are: gpt-4, gpt-4-0314, gpt-4-32k, gpt-4-32k-0314, gpt-3.5-turbo, gpt-3.5-turbo-0301
+Default model is gpt-3.5-turbo.
+Valid models are: gpt-4, gpt-4-0314, gpt-4-32k, gpt-4-32k-0314, gpt-3.5-turbo, gpt-3.5-turbo-0301
 See here for more information on the Models available: https://platform.openai.com/docs/models/model-endpoint-compatibility	
+
+GitHub Tokens need access to the repo scope.
+
+OpenAI API Key Generation: https://platform.openai.com/account/api-keys
+GitHub Token Generation: https://github.com/settings/tokens
 `,
 	Run: func(cmd *cobra.Command, args []string) {
 		// load the config

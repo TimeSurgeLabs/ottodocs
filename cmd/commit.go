@@ -7,11 +7,13 @@ import (
 	"fmt"
 	"os"
 	"sort"
+	"strings"
 
 	"github.com/chand1012/ottodocs/pkg/ai"
 	"github.com/chand1012/ottodocs/pkg/calc"
 	"github.com/chand1012/ottodocs/pkg/config"
 	"github.com/chand1012/ottodocs/pkg/git"
+	"github.com/chand1012/ottodocs/pkg/utils"
 	l "github.com/charmbracelet/log"
 	"github.com/spf13/cobra"
 )
@@ -48,7 +50,7 @@ var commitCmd = &cobra.Command{
 
 		dirty, err := git.IsDirty()
 		if err != nil {
-			log.Error(err)
+			log.Errorf("Error checking if git repo is dirty: %s", err)
 			os.Exit(1)
 		}
 
@@ -73,7 +75,7 @@ var commitCmd = &cobra.Command{
 		log.Debug("Calculating diff tokens...")
 		diffTokens, err := calc.PreciseTokens(diff)
 		if err != nil {
-			log.Error(err)
+			log.Errorf("Error calculating diff tokens: %s", err)
 			os.Exit(1)
 		}
 
@@ -84,7 +86,7 @@ var commitCmd = &cobra.Command{
 			log.Debug("Getting changed files...")
 			files, err := git.GetChangedFiles()
 			if err != nil {
-				log.Error(err)
+				log.Errorf("Error getting changed files: %s", err)
 				os.Exit(1)
 			}
 
@@ -97,8 +99,8 @@ var commitCmd = &cobra.Command{
 				log.Debugf("Getting diff for %s...", file)
 				diff, err := git.GetFileDiff(file)
 				if err != nil {
-					log.Error(err)
-					os.Exit(1)
+					log.Warnf("Error getting diff for %s: %s", file, err)
+					continue
 				}
 
 				diffs = append(diffs, fileDiff{
@@ -142,16 +144,30 @@ var commitCmd = &cobra.Command{
 		}
 
 		if auto || push {
+			if !force {
+				log.Info("Commit message:", msg)
+				confirm, err := utils.Input("Is this okay? (y/n): ")
+				if err != nil {
+					log.Errorf("Error getting input: %s", err)
+					os.Exit(1)
+				}
+				// convert to lowercase
+				confirm = strings.ToLower(confirm)
+				if confirm != "y" {
+					log.Info("Exiting...")
+					os.Exit(0)
+				}
+			}
 			log.Info("Adding and committing...")
 			output, err := git.AddAll()
 			if err != nil {
-				log.Error(err)
+				log.Errorf("Error adding files: %s", err)
 				os.Exit(1)
 			}
 			fmt.Println(output)
 			output, err = git.Commit(msg)
 			if err != nil {
-				log.Error(err)
+				log.Errorf("Error committing: %s", err)
 				os.Exit(1)
 			}
 			fmt.Println(output)
@@ -159,7 +175,7 @@ var commitCmd = &cobra.Command{
 				log.Info("Pushing...")
 				output, err = git.Push()
 				if err != nil {
-					log.Error(err)
+					log.Errorf("Error pushing: %s", err)
 					os.Exit(1)
 				}
 				fmt.Println(output)
@@ -183,4 +199,5 @@ func init() {
 	commitCmd.Flags().BoolVarP(&auto, "auto", "a", false, "automatically add all and commit with the generated message")
 	commitCmd.Flags().BoolVar(&push, "push", false, "automatically push to the current branch")
 	commitCmd.Flags().BoolVarP(&verbose, "verbose", "v", false, "verbose output")
+	commitCmd.Flags().BoolVarP(&force, "force", "f", false, "skip confirmation")
 }
