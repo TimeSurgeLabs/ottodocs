@@ -42,8 +42,6 @@ Requires Git to be installed on the system. If a title is not provided, one will
 			os.Exit(1)
 		}
 
-		fmt.Println("Generating PR...")
-
 		currentBranch, err := git.GetBranch()
 		if err != nil {
 			log.Errorf("Error getting current branch: %s", err)
@@ -66,12 +64,18 @@ Requires Git to be installed on the system. If a title is not provided, one will
 
 		log.Debugf("Got %d logs", len(strings.Split(logs, "\n")))
 
+		fmt.Print("Title: ")
 		if title == "" {
 			// generate the title
 			log.Debug("Generating title...")
-			title, err = ai.PRTitle(logs, c)
+			stream, err := ai.PRTitle(logs, c)
 			if err != nil {
 				log.Errorf("Error generating title: %s", err)
+				os.Exit(1)
+			}
+			title, err = utils.PrintChatCompletionStream(stream)
+			if err != nil {
+				log.Errorf("Error printing chat completion stream: %s", err)
 				os.Exit(1)
 			}
 		}
@@ -145,14 +149,19 @@ Requires Git to be installed on the system. If a title is not provided, one will
 			prompt = "Title: " + title + "\n\nGit logs: " + logs + "\n\nGit diff: " + diff
 		}
 
-		body, err := ai.PRBody(prompt, c)
+		fmt.Print("Body: ")
+		stream, err := ai.PRBody(prompt, c)
 		if err != nil {
 			log.Errorf("Error generating PR body: %s", err)
 			os.Exit(1)
 		}
 
-		fmt.Println("Title: ", title)
-		fmt.Println("Body: ", body)
+		body, err := utils.PrintChatCompletionStream(stream)
+		if err != nil {
+			log.Errorf("Error printing chat completion stream: %s", err)
+			os.Exit(1)
+		}
+
 		fmt.Println("Branch: ", base)
 
 		if !push {
