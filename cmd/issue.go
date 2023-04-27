@@ -25,8 +25,8 @@ import (
 // issueCmd represents the issue command
 var issueCmd = &cobra.Command{
 	Use:     "issue",
-	Short:   "Get a prompt for or ask ChatGPT about a GitHub Issue.",
-	Long:    `Get a prompt for or ask ChatGPT about a GitHub Issue. Uses the current working directory's repo by default.`,
+	Short:   "Get a prompt for or ask Otto about a GitHub Issue.",
+	Long:    `Get a prompt for or ask Otto about a GitHub Issue. Uses the current working directory's repo by default.`,
 	Aliases: []string{"i"},
 	PreRun: func(cmd *cobra.Command, args []string) {
 		if verbose {
@@ -224,15 +224,15 @@ var issueCmd = &cobra.Command{
 			os.Exit(0)
 		}
 
-		log.Debug("Asking ChatGPT...")
-		// ask ChatGPT
+		log.Debug("Asking Otto...")
+		// ask Otto
 		stream, err := ai.SimpleStreamRequest(prompt, c)
 		if err != nil {
 			log.Errorf("Error getting response: %s", err)
 			os.Exit(1)
 		}
 
-		fmt.Print("ChatGPT: ")
+		fmt.Print("Otto: ")
 		_, err = utils.PrintChatCompletionStream(stream)
 		if err != nil {
 			log.Errorf("Error printing response: %s", err)
@@ -245,9 +245,9 @@ func init() {
 	RootCmd.AddCommand(issueCmd)
 
 	issueCmd.Flags().IntVarP(&issuePRNumber, "number", "n", 0, "the number of the issue to get")
-	issueCmd.Flags().StringVarP(&question, "question", "q", "", "the question to ask ChatGPT")
+	issueCmd.Flags().StringVarP(&question, "question", "q", "", "the question to ask Otto")
 	issueCmd.Flags().BoolVarP(&useComments, "comments", "c", false, "use comments instead of git repo for context")
-	issueCmd.Flags().BoolVarP(&promptOnly, "prompt-only", "p", false, "only generate a prompt, don't ask ChatGPT")
+	issueCmd.Flags().BoolVarP(&promptOnly, "prompt-only", "p", false, "only generate a prompt, don't ask Otto")
 	issueCmd.Flags().BoolVarP(&verbose, "verbose", "v", false, "verbose output")
 	issueCmd.Flags().BoolVar(&countFinalTokens, "count", false, "count the number of tokens")
 }

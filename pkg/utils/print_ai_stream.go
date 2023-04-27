@@ -26,7 +26,7 @@ func PrintChatCompletionStream(stream *openai.ChatCompletionStream) (string, err
 			fmt.Print(msg.Choices[0].Delta.Content)
 			completeStream += msg.Choices[0].Delta.Content
 		} else {
-			return "", errors.New("received multiple choices from ChatGPT")
+			return "", errors.New("received multiple choices from Otto")
 		}
 	}
 }

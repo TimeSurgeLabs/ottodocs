@@ -22,8 +22,8 @@ import (
 // cmdCmd represents the cmd command
 var cmdCmd = &cobra.Command{
 	Use:   "cmd",
-	Short: "Have ChatGPT suggest a command to run next",
-	Long: `Have ChatGPT suggest a command to run next. This command will use your shell history to suggest a command to run next.
+	Short: "Have Otto suggest a command to run next",
+	Long: `Have Otto suggest a command to run next. This command will use your shell history to suggest a command to run next.
 This command is only supported on MacOS and Linux using Bash or Zsh. Windows and other shells coming soon!`,
 	PreRun: func(cmd *cobra.Command, args []string) {
 		if verbose {
@@ -52,7 +52,7 @@ This command is only supported on MacOS and Linux using Bash or Zsh. Windows and
 			os.Exit(1)
 		}
 
-		log.Debug("Asking ChatGPT for a command...")
+		log.Debug("Asking Otto for a command...")
 		stream, err := ai.CmdQuestion(history, chatPrompt, conf)
 
 		if err != nil {

@@ -171,7 +171,7 @@ Requires a path to a repository or file as a positional argument.`,
 			}
 		}
 
-		fmt.Print("ChatGPT: ")
+		fmt.Print("Otto: ")
 		_, err = utils.PrintChatCompletionStream(stream)
 		if err != nil {
 			log.Errorf("Error printing chat completion stream: %s", err)

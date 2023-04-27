@@ -136,7 +136,7 @@ Requires Git to be installed on the system. If a title is not provided, one will
 					log.Errorf("Error getting file diff: %s", err)
 					continue
 				}
-				// compress the diff with ChatGPT
+				// compress the diff with Otto
 				compressedDiff, err := ai.CompressDiff(fileDiff, c)
 				if err != nil {
 					log.Errorf("Error compressing diff: %s", err)

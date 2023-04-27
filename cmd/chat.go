@@ -25,8 +25,8 @@ import (
 // chatCmd represents the chat command
 var chatCmd = &cobra.Command{
 	Use:   "chat",
-	Short: "Talk with ChatGPT from the command line!",
-	Long: `Talk with ChatGPT from the command line!
+	Short: "Talk with Otto from the command line!",
+	Long: `Talk with Otto from the command line!
 No code context is passed in this mode. Emulates web chat.`,
 	PreRun: func(cmd *cobra.Command, args []string) {
 		if verbose {
@@ -47,7 +47,7 @@ No code context is passed in this mode. Emulates web chat.`,
 
 		client := openai.NewClient(conf.APIKey)
 
-		fmt.Println("ChatGPT: Hello! I am ChatGPT. Use Ctrl+C to exit at any time.")
+		fmt.Println("Otto: Hello! I am Otto. Use Ctrl+C to exit at any time.")
 
 		for {
 			question, err := utils.Input("You: ")
@@ -56,7 +56,7 @@ No code context is passed in this mode. Emulates web chat.`,
 				os.Exit(1)
 			}
 
-			fmt.Print("ChatGPT: ")
+			fmt.Print("Otto: ")
 
 			log.Debugf("Adding question '%s' to context...", question)
 

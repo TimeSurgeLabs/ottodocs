@@ -31,7 +31,7 @@ func extractLineNumber(line string) (int, error) {
 	return lineNumber, nil
 }
 
-// Document a file using the OpenAI ChatGPT API. Takes a file path, a prompt, and an API key as arguments.
+// Document a file using the OpenAI Otto API. Takes a file path, a prompt, and an API key as arguments.
 func SingleFile(filePath, contents, chatPrompt string, conf *config.Config) (string, error) {
 
 	fileEnding := filepath.Ext(filePath)

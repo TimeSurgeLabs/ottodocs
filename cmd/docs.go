@@ -224,7 +224,7 @@ func init() {
 	RootCmd.AddCommand(docsCmd)
 
 	// see cmd/vars for the definition of these flags
-	docsCmd.Flags().StringVarP(&chatPrompt, "prompt", "p", "", "Prompt to use for the ChatGPT API")
+	docsCmd.Flags().StringVarP(&chatPrompt, "prompt", "p", "", "Prompt to use for the Otto API")
 	docsCmd.Flags().StringVarP(&outputFile, "output", "o", "", "Path to the output file. For use with --markdown")
 	docsCmd.Flags().StringVarP(&ignoreFilePath, "ignore", "n", "", "path to .gptignore file")
 	docsCmd.Flags().BoolVarP(&markdownMode, "markdown", "m", false, "Output in Markdown format")

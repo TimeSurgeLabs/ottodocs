@@ -136,7 +136,7 @@ var commitCmd = &cobra.Command{
 			log.Debugf("Diff tokens %d is less than the model maximum of tokens %d", diffTokens, calc.GetMaxTokens(conf.Model))
 		}
 
-		log.Debug("Sending diff to ChatGPT...")
+		log.Debug("Sending diff to Otto...")
 		fmt.Print("Commit Msg: ")
 		stream, err := ai.CommitMessage(diff, conventional, conf)
 		if err != nil {

@@ -16,8 +16,8 @@ import (
 // promptCmd represents the prompt command
 var promptCmd = &cobra.Command{
 	Use:   "prompt",
-	Short: "Generates a ChatGPT prompt from a given Git repo",
-	Long:  `Generates a ChatGPT prompt from a given Git repo. Specify the path to the repo as the first positional argument.`,
+	Short: "Generates a Otto prompt from a given Git repo",
+	Long:  `Generates a Otto prompt from a given Git repo. Specify the path to the repo as the first positional argument.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		var repoPath string
 		if len(args) > 0 {
