@@ -203,11 +203,6 @@ var commitCmd = &cobra.Command{
 			os.Exit(0)
 		}
 
-		if plain {
-			fmt.Println(msg)
-		} else {
-			fmt.Println("Commit message:", msg)
-		}
 	},
 }
 
@@ -215,7 +210,6 @@ func init() {
 	RootCmd.AddCommand(commitCmd)
 
 	commitCmd.Flags().BoolVarP(&conventional, "conventional", "c", false, "use conventional commits")
-	commitCmd.Flags().BoolVarP(&plain, "plain", "p", false, "no output formatting")
 	commitCmd.Flags().BoolVarP(&auto, "auto", "a", false, "automatically add all and commit with the generated message")
 	commitCmd.Flags().BoolVar(&push, "push", false, "automatically push to the current branch")
 	commitCmd.Flags().BoolVarP(&verbose, "verbose", "v", false, "verbose output")
