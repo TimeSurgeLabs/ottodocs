@@ -26,9 +26,10 @@ type fileDiff struct {
 
 // commitCmd represents the commit command
 var commitCmd = &cobra.Command{
-	Use:   "commit",
-	Short: "Generates a commit message from the git diff",
-	Long:  `Uses the git diff to generate a commit message. Requires Git to be installed on the system.`,
+	Use:     "commit",
+	Short:   "Generates a commit message from the git diff",
+	Long:    `Uses the git diff to generate a commit message. Requires Git to be installed on the system.`,
+	Aliases: []string{"cm"},
 	PreRun: func(cmd *cobra.Command, args []string) {
 		if verbose {
 			log.SetLevel(l.DebugLevel)

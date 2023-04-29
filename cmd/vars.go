@@ -40,6 +40,9 @@ var useComments bool
 var promptOnly bool
 var countFinalTokens bool
 
+var startLine int
+var endLine int
+
 var log = l.NewWithOptions(os.Stderr, l.Options{
 	Level:           l.InfoLevel,
 	ReportTimestamp: false,

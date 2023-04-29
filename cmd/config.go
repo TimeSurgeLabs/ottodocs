@@ -29,6 +29,7 @@ GitHub Tokens need access to the repo scope.
 OpenAI API Key Generation: https://platform.openai.com/account/api-keys
 GitHub Token Generation: https://github.com/settings/tokens
 `,
+	Aliases: []string{"c"},
 	Run: func(cmd *cobra.Command, args []string) {
 		// load the config
 		c, err := config.Load()

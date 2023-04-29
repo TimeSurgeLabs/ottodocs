@@ -38,3 +38,21 @@ func InsertLinesAtIndices(file string, indices []int, linesToInsert []string) (s
 
 	return strings.Join(lines, "\n"), nil
 }
+
+func ReplaceLines(code string, startLine int, endLine int, newText string) (string, error) {
+	if startLine < 1 || endLine < 1 {
+		return "", fmt.Errorf("startLine and endLine must be greater than or equal to 1")
+	}
+
+	if startLine > endLine {
+		return "", fmt.Errorf("startLine must be less than or equal to endLine")
+	}
+
+	lines := strings.Split(code, "\n")
+	if endLine > len(lines) {
+		return "", fmt.Errorf("endLine is greater than the number of lines in the code")
+	}
+
+	lines = append(lines[:startLine-1], append([]string{newText}, lines[endLine:]...)...)
+	return strings.Join(lines, "\n"), nil
+}

@@ -27,6 +27,7 @@ var askCmd = &cobra.Command{
 	Short: "Ask a question about a file or repo",
 	Long: `Uses full text search to find relevant code and ask questions about said code.
 Requires a path to a repository or file as a positional argument.`,
+	Aliases: []string{"a"},
 	PreRun: func(cmd *cobra.Command, args []string) {
 		if verbose {
 			log.SetLevel(l.DebugLevel)

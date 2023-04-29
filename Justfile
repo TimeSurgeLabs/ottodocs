@@ -28,6 +28,12 @@ install: build
   rm -rf $GOPATH/bin/otto
   cp bin/otto $GOPATH/bin
 
+add command:
+  cobra-cli add {{command}}
+
+test:
+  go test -v ./...
+
 crossbuild:
   #!/bin/bash
 

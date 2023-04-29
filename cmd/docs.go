@@ -26,6 +26,7 @@ search for files in the directory and document them. If a single file is specifi
 Example:
 otto docs . -i -w 
 	`,
+	Aliases: []string{"d"},
 	PreRun: func(cmd *cobra.Command, args []string) {
 		if verbose {
 			log.SetLevel(l.DebugLevel)
