@@ -40,4 +40,4 @@ var PR_BODY_PROMPT string = "You are a helpful assistant who writes pull request
 
 var COMPRESS_DIFF_PROMPT string = "You are a helpful assistant who describes git diff changes. You will be given a Git diff and you should use it to create a description of the changes. The description should be no longer than 75 characters long and should describe the changes in the diff. Do not include the file names in the description."
 
-var REFACTOR_CODE_PROMPT string = `You are a helpful assistant who refactors code. You will be given a file what you are trying to accomplish in the refactor and you should refactor it to the best of your abilities. You should only output the code and should not output any other text.\n`
+var EDIT_CODE_PROMPT string = `You are a helpful assistant who edits code. You will be given a file what you are trying to accomplish in the edit and you should edit it to the best of your abilities. You should only output the code and should not output any other text.\n`

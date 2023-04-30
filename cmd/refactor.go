@@ -17,9 +17,9 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// refactorCmd represents the refactor command
-var refactorCmd = &cobra.Command{
-	Use:   "refactor",
+// editCmd represents the edit command
+var editCmd = &cobra.Command{
+	Use:   "edit",
 	Short: "A brief description of your command",
 	Long: `A longer description that spans multiple lines and likely contains examples
 and usage of using your command. For example:
@@ -35,7 +35,7 @@ to quickly create a Cobra application.`,
 	},
 	Run: func(cmd *cobra.Command, args []string) {
 		if len(args) == 0 {
-			log.Error("Requires a file name as an argument. Example: otto refactor main.go")
+			log.Error("Requires a file name as an argument. Example: otto edit main.go")
 			os.Exit(1)
 		}
 
@@ -60,7 +60,7 @@ to quickly create a Cobra application.`,
 		}
 
 		if endLine != 0 {
-			// get the lines to refactor
+			// get the lines to edit
 			lines := strings.Split(contents, "\n")
 			if endLine > len(lines) {
 				log.Error("End line is greater than the number of lines in the file")
@@ -72,7 +72,7 @@ to quickly create a Cobra application.`,
 			endLine = len(strings.Split(contents, "\n"))
 		}
 
-		log.Debugf("Refactoring lines %d-%d", startLine, endLine)
+		log.Debugf("editing lines %d-%d", startLine, endLine)
 
 		if chatPrompt == "" {
 			chatPrompt, err = utils.Input("Goal: ")
@@ -82,7 +82,7 @@ to quickly create a Cobra application.`,
 			}
 		}
 
-		prompt := constants.REFACTOR_CODE_PROMPT + "Goal: " + chatPrompt + "\n\n" + strings.TrimRight(contents, " \n")
+		prompt := constants.EDIT_CODE_PROMPT + "Goal: " + chatPrompt + "\n\n" + strings.TrimRight(contents, " \n")
 
 		stream, err := ai.SimpleStreamRequest(prompt, c)
 		if err != nil {
@@ -128,11 +128,11 @@ to quickly create a Cobra application.`,
 }
 
 func init() {
-	RootCmd.AddCommand(refactorCmd)
+	RootCmd.AddCommand(editCmd)
 
-	refactorCmd.Flags().BoolVarP(&force, "force", "f", false, "Force overwrite of existing files")
-	refactorCmd.Flags().BoolVarP(&verbose, "verbose", "v", false, "Verbose output")
-	refactorCmd.Flags().IntVarP(&startLine, "start", "s", 1, "Start line")
-	refactorCmd.Flags().IntVarP(&endLine, "end", "e", 0, "End line")
-	refactorCmd.Flags().StringVarP(&chatPrompt, "goal", "g", "", "Goal of the refactor")
+	editCmd.Flags().BoolVarP(&force, "force", "f", false, "Force overwrite of existing files")
+	editCmd.Flags().BoolVarP(&verbose, "verbose", "v", false, "Verbose output")
+	editCmd.Flags().IntVarP(&startLine, "start", "s", 1, "Start line")
+	editCmd.Flags().IntVarP(&endLine, "end", "e", 0, "End line")
+	editCmd.Flags().StringVarP(&chatPrompt, "goal", "g", "", "Goal of the edit")
 }
