@@ -42,6 +42,7 @@ var countFinalTokens bool
 
 var startLine int
 var endLine int
+var appendFile bool
 
 var log = l.NewWithOptions(os.Stderr, l.Options{
 	Level:           l.InfoLevel,

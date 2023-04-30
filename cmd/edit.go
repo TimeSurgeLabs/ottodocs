@@ -27,7 +27,7 @@ and usage of using your command. For example:
 Cobra is a CLI library for Go that empowers applications.
 This application is a tool to generate the needed files
 to quickly create a Cobra application.`,
-	Aliases: []string{"r"},
+	Aliases: []string{"e"},
 	PreRun: func(cmd *cobra.Command, args []string) {
 		if verbose {
 			log.SetLevel(l.DebugLevel)
@@ -46,6 +46,22 @@ to quickly create a Cobra application.`,
 		}
 
 		fileName := args[0]
+
+		// check if the file exists
+		exists, err := utils.FileExists(fileName)
+		if err != nil {
+			log.Errorf("Error checking if file exists: %s", err)
+			os.Exit(1)
+		}
+
+		if !exists {
+			// create a new empty file
+			err = os.WriteFile(fileName, []byte(""), 0644)
+			if err != nil {
+				log.Errorf("Error creating new file: %s", err)
+				os.Exit(1)
+			}
+		}
 
 		// load the file
 		contents, err := utils.LoadFile(fileName)
@@ -98,8 +114,13 @@ to quickly create a Cobra application.`,
 			os.Exit(1)
 		}
 
+		confirmMsg := "Would you like to overwrite the file with the new code? (y/N): "
+		if appendFile {
+			confirmMsg = "Would you like to append the new code to the file? (y/N): "
+		}
+
 		if !force {
-			confirm, err := utils.Input("Would you like to overwrite the file with the new code? (y/N): ")
+			confirm, err := utils.Input(confirmMsg)
 			if err != nil {
 				log.Errorf("Error getting input: %s", err)
 				os.Exit(1)
@@ -111,11 +132,17 @@ to quickly create a Cobra application.`,
 			}
 		}
 
-		// write the new code to the file
-		finalCode, err := textfile.ReplaceLines(contents, startLine, endLine, newCode)
-		if err != nil {
-			log.Errorf("Error replacing lines: %s", err)
-			os.Exit(1)
+		var finalCode string
+		if appendFile {
+			// add the new code to the end of the file
+			finalCode = contents + "\n" + newCode + "\n"
+		} else {
+			// write the new code to the file
+			finalCode, err = textfile.ReplaceLines(contents, startLine, endLine, newCode)
+			if err != nil {
+				log.Errorf("Error replacing lines: %s", err)
+				os.Exit(1)
+			}
 		}
 
 		err = utils.WriteFile(fileName, finalCode)
@@ -132,6 +159,7 @@ func init() {
 
 	editCmd.Flags().BoolVarP(&force, "force", "f", false, "Force overwrite of existing files")
 	editCmd.Flags().BoolVarP(&verbose, "verbose", "v", false, "Verbose output")
+	editCmd.Flags().BoolVarP(&appendFile, "append", "a", false, "Append to the end of a file instead of overwriting it")
 	editCmd.Flags().IntVarP(&startLine, "start", "s", 1, "Start line")
 	editCmd.Flags().IntVarP(&endLine, "end", "e", 0, "End line")
 	editCmd.Flags().StringVarP(&chatPrompt, "goal", "g", "", "Goal of the edit")
