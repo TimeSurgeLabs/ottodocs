@@ -1,5 +1,5 @@
 /*
-Copyright © 2023 NAME HERE <EMAIL ADDRESS>
+Copyright © 2023 Chandler <chandler@chand1012.dev>
 */
 package cmd
 
@@ -20,13 +20,12 @@ import (
 // editCmd represents the edit command
 var editCmd = &cobra.Command{
 	Use:   "edit",
-	Short: "A brief description of your command",
-	Long: `A longer description that spans multiple lines and likely contains examples
-and usage of using your command. For example:
+	Short: "Edit a file using AI",
+	Long: `OttoDocs Edit allows you to use AI to help edit your code files. 
+Provide a file name and a goal, and OttoDocs will return a generated version of the file.
+You can even specify the starting and ending lines for the edit, or choose to append the results to the file:
 
-Cobra is a CLI library for Go that empowers applications.
-This application is a tool to generate the needed files
-to quickly create a Cobra application.`,
+Example: otto edit main.go --start 1 --end 10 --goal "Refactor the function"`,
 	Aliases: []string{"e"},
 	PreRun: func(cmd *cobra.Command, args []string) {
 		if verbose {
@@ -47,25 +46,11 @@ to quickly create a Cobra application.`,
 
 		fileName := args[0]
 
-		// check if the file exists
-		exists, err := utils.FileExists(fileName)
-		if err != nil {
-			log.Errorf("Error checking if file exists: %s", err)
-			os.Exit(1)
-		}
-
-		if !exists {
-			// create a new empty file
-			err = os.WriteFile(fileName, []byte(""), 0644)
-			if err != nil {
-				log.Errorf("Error creating new file: %s", err)
-				os.Exit(1)
-			}
-		}
-
 		// load the file
 		contents, err := utils.LoadFile(fileName)
-		if err != nil {
+		if os.IsNotExist(err) {
+			contents = ""
+		} else if err == nil {
 			log.Errorf("Error loading file: %s", err)
 			os.Exit(1)
 		}
@@ -75,6 +60,7 @@ to quickly create a Cobra application.`,
 			os.Exit(1)
 		}
 
+		var editCode string
 		if endLine != 0 {
 			// get the lines to edit
 			lines := strings.Split(contents, "\n")
@@ -83,7 +69,7 @@ to quickly create a Cobra application.`,
 				os.Exit(1)
 			}
 
-			contents = strings.Join(lines[startLine-1:endLine], "\n")
+			editCode = strings.Join(lines[startLine-1:endLine], "\n")
 		} else {
 			endLine = len(strings.Split(contents, "\n"))
 		}
@@ -98,7 +84,12 @@ to quickly create a Cobra application.`,
 			}
 		}
 
-		prompt := constants.EDIT_CODE_PROMPT + "Goal: " + chatPrompt + "\n\n" + strings.TrimRight(contents, " \n")
+		var prompt string
+		if editCode != "" {
+			prompt = constants.EDIT_CODE_PROMPT + "\nEDIT: " + editCode + "\n\nGOAL: " + chatPrompt + "\n\nFILE: " + contents
+		} else {
+			prompt = constants.EDIT_CODE_PROMPT + "\nGOAL: " + chatPrompt + "\n\nFILE: " + contents
+		}
 
 		stream, err := ai.SimpleStreamRequest(prompt, c)
 		if err != nil {
