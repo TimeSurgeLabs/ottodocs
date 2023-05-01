@@ -50,7 +50,7 @@ Example: otto edit main.go --start 1 --end 10 --goal "Refactor the function"`,
 		contents, err := utils.LoadFile(fileName)
 		if os.IsNotExist(err) {
 			contents = ""
-		} else if err == nil {
+		} else if err != nil {
 			log.Errorf("Error loading file: %s", err)
 			os.Exit(1)
 		}
