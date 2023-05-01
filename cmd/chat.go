@@ -47,17 +47,17 @@ No code context is passed in this mode. Emulates web chat.`,
 
 		client := openai.NewClient(conf.APIKey)
 
-		utils.PrintColoredText("Otto: ", "#008080")
+		utils.PrintColoredText("Otto: ", conf.OttoColor)
 		fmt.Println("Hello! I am Otto. Use Ctrl+C to exit at any time.")
 
 		for {
-			question, err := utils.InputWithColor("You: ", "#007bff")
+			question, err := utils.InputWithColor("You: ", conf.UserColor)
 			if err != nil {
 				log.Error(err)
 				os.Exit(1)
 			}
 
-			utils.PrintColoredText("Otto: ", "#008080")
+			utils.PrintColoredText("Otto: ", conf.OttoColor)
 
 			log.Debugf("Adding question '%s' to context...", question)
 
