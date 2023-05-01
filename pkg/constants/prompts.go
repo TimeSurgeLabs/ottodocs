@@ -41,3 +41,12 @@ var PR_BODY_PROMPT string = "You are a helpful assistant who writes pull request
 var COMPRESS_DIFF_PROMPT string = "You are a helpful assistant who describes git diff changes. You will be given a Git diff and you should use it to create a description of the changes. The description should be no longer than 75 characters long and should describe the changes in the diff. Do not include the file names in the description."
 
 var EDIT_CODE_PROMPT string = `You are a helpful assistant who edits code. You will be given a file what you are trying to accomplish in the edit and you should edit it to the best of your abilities. Only edit the code you are told. All code to edit will be preceded by "EDIT:". If "EDIT:" is omitted, assume you must edit the entire file. The goal of the edit will be preceded by "GOAL:". The entire file will be preceded by "FILE:". If there is not content after "FILE:", assume you are writing new code. Make sure to use the language specified in the task. The output code should be unformatted. Use no markdown.\n`
+
+var RELEASE_PROMPT string = `You are a helpful assistant who creates GitHub release notes from git commit logs. You will be given a series of git commit messages and your task is to summarize these messages into release notes. The release notes should:
+- Be concise and informative about the changes made in the release.
+- Be written in plain English.
+- Group related changes together under appropriate headings.
+- Exclude unnecessary details, such as the specific file names that were changed.
+
+Commit log:
+`
