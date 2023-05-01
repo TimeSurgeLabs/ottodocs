@@ -86,9 +86,21 @@ Example: otto edit main.go --start 1 --end 10 --goal "Refactor the function"`,
 
 		var prompt string
 		if editCode != "" {
-			prompt = constants.EDIT_CODE_PROMPT + "\nEDIT: " + editCode + "\n\nGOAL: " + chatPrompt + "\n\nFILE: " + contents
+			prompt = constants.EDIT_CODE_PROMPT + "\nEDIT: " + editCode + "\n\nGOAL: " + chatPrompt + "\n\nFILE: " + filePath + "\n\n" + contents
 		} else {
-			prompt = constants.EDIT_CODE_PROMPT + "\nGOAL: " + chatPrompt + "\n\nFILE: " + contents
+			prompt = constants.EDIT_CODE_PROMPT + "\nGOAL: " + chatPrompt + "\n\nFILE: " + filePath + "\n\n" + contents
+		}
+
+		if len(contextFiles) > 0 {
+			var contextContent string
+			for _, contextFile := range contextFiles {
+				contextContent, err = utils.LoadFile(contextFile)
+				if err != nil {
+					log.Errorf("Error loading context file: %s", err)
+					continue
+				}
+				prompt += "\n\nCONTEXT: " + contextFile + "\n\n" + contextContent
+			}
 		}
 
 		stream, err := ai.SimpleStreamRequest(prompt, c)
@@ -154,4 +166,5 @@ func init() {
 	editCmd.Flags().IntVarP(&startLine, "start", "s", 1, "Start line")
 	editCmd.Flags().IntVarP(&endLine, "end", "e", 0, "End line")
 	editCmd.Flags().StringVarP(&chatPrompt, "goal", "g", "", "Goal of the edit")
+	editCmd.Flags().StringSliceVarP(&contextFiles, "context", "c", []string{}, "Context files")
 }

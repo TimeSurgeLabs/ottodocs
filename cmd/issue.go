@@ -133,6 +133,26 @@ var issueCmd = &cobra.Command{
 				prompt += comment
 				tokens += commentTokens
 			}
+		} else if len(contextFiles) > 0 {
+			log.Debug("Using specified files...")
+			var contextContent string
+			for _, contextFile := range contextFiles {
+				contextContent, err = utils.LoadFile(contextFile)
+				if err != nil {
+					log.Errorf("Error loading context file: %s", err)
+					continue
+				}
+				prompt += "\n\nFile: " + contextFile + "\n\n" + contextContent
+				fileTokens, err := calc.PreciseTokens(contextContent)
+				if err != nil {
+					log.Errorf("Error getting tokens: %s", err)
+					os.Exit(1)
+				}
+				if tokens+fileTokens > calc.GetMaxTokens(c.Model) {
+					break
+				}
+				tokens += fileTokens
+			}
 		} else {
 			log.Debug("Using repo contents...")
 			// get the repo context here
@@ -246,6 +266,7 @@ func init() {
 
 	issueCmd.Flags().IntVarP(&issuePRNumber, "number", "n", 0, "the number of the issue to get")
 	issueCmd.Flags().StringVarP(&question, "question", "q", "", "the question to ask Otto")
+	issueCmd.Flags().StringSliceVarP(&contextFiles, "context", "f", []string{}, "the files to use as context")
 	issueCmd.Flags().BoolVarP(&useComments, "comments", "c", false, "use comments instead of git repo for context")
 	issueCmd.Flags().BoolVarP(&promptOnly, "prompt-only", "p", false, "only generate a prompt, don't ask Otto")
 	issueCmd.Flags().BoolVarP(&verbose, "verbose", "v", false, "verbose output")

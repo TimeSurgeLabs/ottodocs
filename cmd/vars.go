@@ -47,6 +47,8 @@ var appendFile bool
 var previousTag string
 var currentTag string
 
+var contextFiles []string
+
 var log = l.NewWithOptions(os.Stderr, l.Options{
 	Level:           l.InfoLevel,
 	ReportTimestamp: false,
