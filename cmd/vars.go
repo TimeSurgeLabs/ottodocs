@@ -34,6 +34,8 @@ var model string
 var apiKey string
 var ghToken string
 var remote string
+var userColor string
+var ottoColor string
 
 var issuePRNumber int
 var useComments bool

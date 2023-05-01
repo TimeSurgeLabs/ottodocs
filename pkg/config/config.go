@@ -13,6 +13,8 @@ type Config struct {
 	Model     string `json:"model"`
 	GHToken   string `json:"gh_token"`
 	Signature string `json:"signature"`
+	UserColor string `json:"user_color"`
+	OttoColor string `json:"otto_color"`
 }
 
 // also returns the path to the config file
@@ -47,6 +49,8 @@ func createIfNotExists() (string, error) {
 			Model:     "gpt-3.5-turbo",
 			GHToken:   "",
 			Signature: "Created by [OttoDocs 🦦](https://ottodocs.chand1012.dev/)",
+			UserColor: "#87CEEB",
+			OttoColor: "#1BFFE4",
 		}
 		err = json.NewEncoder(file).Encode(blankConfig)
 		if err != nil {
