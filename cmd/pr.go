@@ -64,7 +64,7 @@ Requires Git to be installed on the system. If a title is not provided, one will
 
 		log.Debugf("Got %d logs", len(strings.Split(logs, "\n")))
 
-		fmt.Print("Title: ")
+		utils.PrintColoredText("Title: ", c.OttoColor)
 		if title == "" {
 			// generate the title
 			log.Debug("Generating title...")
@@ -78,6 +78,8 @@ Requires Git to be installed on the system. If a title is not provided, one will
 				log.Errorf("Error printing chat completion stream: %s", err)
 				os.Exit(1)
 			}
+		} else {
+			fmt.Println(title)
 		}
 
 		log.Debugf("Title: %s", title)
@@ -149,7 +151,7 @@ Requires Git to be installed on the system. If a title is not provided, one will
 			prompt = "Title: " + title + "\n\nGit logs: " + logs + "\n\nGit diff: " + diff
 		}
 
-		fmt.Print("Body: ")
+		utils.PrintColoredText("Body: ", c.OttoColor)
 		stream, err := ai.PRBody(prompt, c)
 		if err != nil {
 			log.Errorf("Error generating PR body: %s", err)
@@ -162,7 +164,8 @@ Requires Git to be installed on the system. If a title is not provided, one will
 			os.Exit(1)
 		}
 
-		fmt.Println("Branch: ", base)
+		utils.PrintColoredText("Branch: ", c.OttoColor)
+		fmt.Println(base)
 
 		if !push {
 			os.Exit(0)

@@ -38,7 +38,7 @@ It will create a new release given a tag and post it to GitHub as a draft.`,
 		}
 
 		if previousTag == "" {
-			previousTag, err = utils.Input("Previous tag: ")
+			previousTag, err = utils.InputWithColor("Previous tag: ", c.UserColor)
 			if err != nil {
 				log.Errorf("Error getting previous tag: %s", err)
 				os.Exit(1)
@@ -46,14 +46,14 @@ It will create a new release given a tag and post it to GitHub as a draft.`,
 		}
 
 		if currentTag == "" {
-			currentTag, err = utils.Input("Current tag: ")
+			currentTag, err = utils.InputWithColor("Current tag: ", c.UserColor)
 			if err != nil {
 				log.Errorf("Error getting current tag: %s", err)
 				os.Exit(1)
 			}
 		}
 
-		fmt.Print("Release notes: ")
+		utils.PrintColoredText("Release notes: ", c.OttoColor)
 
 		// get the log between the tags
 		gitLog, err := git.LogBetween(previousTag, currentTag)
@@ -114,7 +114,7 @@ func init() {
 	RootCmd.AddCommand(releaseCmd)
 
 	releaseCmd.Flags().BoolVarP(&verbose, "verbose", "v", false, "Verbose output")
-	releaseCmd.Flags().BoolVarP(&force, "force", "f", false, "Force overwrite of existing file")
+	releaseCmd.Flags().BoolVarP(&force, "force", "f", false, "Do not prompt for confirmation")
 	releaseCmd.Flags().StringVarP(&previousTag, "prev-tag", "p", "", "Previous tag")
 	releaseCmd.Flags().StringVarP(&currentTag, "tag", "t", "", "Current tag")
 }
