@@ -104,10 +104,16 @@ var commitCmd = &cobra.Command{
 					continue
 				}
 
+				tokens, err := calc.PreciseTokens(diff)
+				if err != nil {
+					log.Warnf("Error calculating tokens for %s: %s", file, err)
+					continue
+				}
+
 				diffs = append(diffs, fileDiff{
 					Diff:   diff,
 					File:   file,
-					Tokens: calc.EstimateTokens(diff),
+					Tokens: tokens,
 				})
 			}
 
@@ -165,7 +171,7 @@ var commitCmd = &cobra.Command{
 			}
 		}
 
-		if auto || push {
+		if !noCommit || push {
 			if !force {
 				confirm, err := utils.Input("Is this okay? (y/n): ")
 				if err != nil {
@@ -211,7 +217,7 @@ func init() {
 	RootCmd.AddCommand(commitCmd)
 
 	commitCmd.Flags().BoolVarP(&conventional, "conventional", "c", false, "use conventional commits")
-	commitCmd.Flags().BoolVarP(&auto, "auto", "a", false, "automatically add all and commit with the generated message")
+	commitCmd.Flags().BoolVarP(&noCommit, "no-commit", "n", false, "don't commit, just print the message. Ignored if --push is set")
 	commitCmd.Flags().BoolVar(&push, "push", false, "automatically push to the current branch")
 	commitCmd.Flags().BoolVarP(&verbose, "verbose", "v", false, "verbose output")
 	commitCmd.Flags().BoolVarP(&force, "force", "f", false, "skip confirmation")

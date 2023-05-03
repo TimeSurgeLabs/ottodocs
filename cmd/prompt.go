@@ -8,8 +8,8 @@ import (
 	"os"
 
 	"github.com/chand1012/git2gpt/prompt"
+	"github.com/chand1012/ottodocs/pkg/calc"
 	"github.com/chand1012/ottodocs/pkg/git"
-	"github.com/pandodao/tokenizer-go"
 	"github.com/spf13/cobra"
 )
 
@@ -79,7 +79,12 @@ var promptCmd = &cobra.Command{
 			fmt.Println(output)
 		}
 		if estimateTokens {
-			fmt.Printf("Estimated number of tokens: %d\n", tokenizer.MustCalToken(output))
+			tokens, err := calc.PreciseTokens(output)
+			if err != nil {
+				log.Errorf("Error: %s", err)
+				os.Exit(1)
+			}
+			fmt.Printf("Estimated number of tokens: %d\n", tokens)
 		}
 	},
 }

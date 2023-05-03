@@ -24,7 +24,7 @@ var markdownMode bool
 var overwriteOriginal bool
 
 var conventional bool // use conventional commits
-var auto bool
+var noCommit bool
 var push bool
 
 var base string

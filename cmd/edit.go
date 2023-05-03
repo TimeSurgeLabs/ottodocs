@@ -110,7 +110,7 @@ Example: otto edit main.go --start 1 --end 10 --goal "Refactor the function"`,
 		}
 
 		// print the response
-		fmt.Println("New Code:")
+		utils.PrintColoredTextLn("New Code:", c.OttoColor)
 		newCode, err := utils.PrintChatCompletionStream(stream)
 		if err != nil {
 			log.Errorf("Error printing chat completion stream: %s", err)

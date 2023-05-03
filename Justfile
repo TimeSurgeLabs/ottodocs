@@ -16,6 +16,7 @@ build:
 
 clean:
   rm -rf bin dist
+  go clean -cache
 
 run *commands:
   go run main.go {{commands}}

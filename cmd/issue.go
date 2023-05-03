@@ -266,8 +266,8 @@ func init() {
 
 	issueCmd.Flags().IntVarP(&issuePRNumber, "number", "n", 0, "the number of the issue to get")
 	issueCmd.Flags().StringVarP(&question, "question", "q", "", "the question to ask Otto")
-	issueCmd.Flags().StringSliceVarP(&contextFiles, "context", "f", []string{}, "the files to use as context")
-	issueCmd.Flags().BoolVarP(&useComments, "comments", "c", false, "use comments instead of git repo for context")
+	issueCmd.Flags().StringSliceVarP(&contextFiles, "context", "c", []string{}, "the files to use as context")
+	issueCmd.Flags().BoolVarP(&useComments, "comments", "r", false, "use comments instead of git repo for context")
 	issueCmd.Flags().BoolVarP(&promptOnly, "prompt-only", "p", false, "only generate a prompt, don't ask Otto")
 	issueCmd.Flags().BoolVarP(&verbose, "verbose", "v", false, "verbose output")
 	issueCmd.Flags().BoolVar(&countFinalTokens, "count", false, "count the number of tokens")

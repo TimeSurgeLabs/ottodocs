@@ -4,7 +4,6 @@ Copyright © 2023 Chandler <chandler@chand1012.dev>
 package cmd
 
 import (
-	"fmt"
 	"os"
 	"path/filepath"
 
@@ -172,7 +171,7 @@ Requires a path to a repository or file as a positional argument.`,
 			}
 		}
 
-		fmt.Print("Otto: ")
+		utils.PrintColoredText("Otto: ", conf.OttoColor)
 		_, err = utils.PrintChatCompletionStream(stream)
 		if err != nil {
 			log.Errorf("Error printing chat completion stream: %s", err)
