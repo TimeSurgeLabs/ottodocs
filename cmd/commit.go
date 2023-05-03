@@ -144,7 +144,7 @@ var commitCmd = &cobra.Command{
 		}
 
 		log.Debug("Sending diff to Otto...")
-		fmt.Print("Commit Msg: ")
+		utils.PrintColoredText("Commit Msg: ", conf.OttoColor)
 		stream, err := ai.CommitMessage(diff, conventional, conf)
 		if err != nil {
 			log.Error(err)
@@ -166,7 +166,7 @@ var commitCmd = &cobra.Command{
 				newMsg = strings.Split(msg, ".")[0]
 			}
 			if len(newMsg) != len(msg) {
-				fmt.Println("Truncated commit message: ", newMsg)
+				utils.PrintColoredTextLn("Truncated commit message: "+newMsg, conf.OttoColor)
 				msg = newMsg
 			}
 		}
