@@ -46,7 +46,7 @@ func GetMaxTokens(model string) int {
 	return 4096
 }
 
-func PreciseTokensFromModel(messages []openai.ChatCompletionMessage, model string) (num_tokens int) {
+func PreciseTokensFromMessages(messages []openai.ChatCompletionMessage, model string) (num_tokens int) {
 	tkm, err := tiktoken.EncodingForModel(model)
 	if err != nil {
 		err = fmt.Errorf("EncodingForModel: %v", err)

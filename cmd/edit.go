@@ -4,16 +4,18 @@ Copyright © 2023 Chandler <chandler@chand1012.dev>
 package cmd
 
 import (
+	"context"
 	"fmt"
 	"os"
 	"strings"
 
-	"github.com/chand1012/ottodocs/pkg/ai"
+	"github.com/chand1012/ottodocs/pkg/calc"
 	"github.com/chand1012/ottodocs/pkg/config"
 	"github.com/chand1012/ottodocs/pkg/constants"
 	"github.com/chand1012/ottodocs/pkg/textfile"
 	"github.com/chand1012/ottodocs/pkg/utils"
 	l "github.com/charmbracelet/log"
+	"github.com/sashabaranov/go-openai"
 	"github.com/spf13/cobra"
 )
 
@@ -84,11 +86,14 @@ Example: otto edit main.go --start 1 --end 10 --goal "Refactor the function"`,
 			}
 		}
 
+		var messages []openai.ChatCompletionMessage
+		var newCode string
+
 		var prompt string
 		if editCode != "" {
-			prompt = constants.EDIT_CODE_PROMPT + "\nEDIT: " + editCode + "\n\nGOAL: " + chatPrompt + "\n\nFILE: " + filePath + "\n\n" + contents
+			prompt = "EDIT: " + editCode + "\n\nGOAL: " + chatPrompt + "\n\nFILE: " + filePath + "\n\n" + contents + "\n\nBe sure to only output the edited code, do not print the entire file."
 		} else {
-			prompt = constants.EDIT_CODE_PROMPT + "\nGOAL: " + chatPrompt + "\n\nFILE: " + filePath + "\n\n" + contents
+			prompt = "GOAL: " + chatPrompt + "\n\nFILE: " + filePath + "\n\n" + contents
 		}
 
 		if len(contextFiles) > 0 {
@@ -103,35 +108,87 @@ Example: otto edit main.go --start 1 --end 10 --goal "Refactor the function"`,
 			}
 		}
 
-		stream, err := ai.SimpleStreamRequest(prompt, c)
-		if err != nil {
-			log.Errorf("Error requesting from OpenAI: %s", err)
-			os.Exit(1)
+		client := openai.NewClient(c.APIKey)
+
+		messages = []openai.ChatCompletionMessage{
+			{
+				Role:    openai.ChatMessageRoleSystem,
+				Content: constants.EDIT_CODE_PROMPT,
+			},
+			{
+				Role:    openai.ChatMessageRoleUser,
+				Content: prompt,
+			},
 		}
 
-		// print the response
-		utils.PrintColoredTextLn("New Code:", c.OttoColor)
-		newCode, err := utils.PrintChatCompletionStream(stream)
-		if err != nil {
-			log.Errorf("Error printing chat completion stream: %s", err)
-			os.Exit(1)
-		}
+		for {
 
-		confirmMsg := "Would you like to overwrite the file with the new code? (y/N): "
-		if appendFile {
-			confirmMsg = "Would you like to append the new code to the file? (y/N): "
-		}
+			stream, err := client.CreateChatCompletionStream(context.Background(), openai.ChatCompletionRequest{
+				Model:    c.Model,
+				Messages: messages,
+			})
 
-		if !force {
-			confirm, err := utils.Input(confirmMsg)
 			if err != nil {
-				log.Errorf("Error getting input: %s", err)
+				log.Errorf("Error requesting from OpenAI: %s", err)
 				os.Exit(1)
 			}
 
-			confirm = strings.ToLower(confirm)
-			if confirm != "y" && confirm != "yes" {
-				os.Exit(0)
+			// print the response
+			utils.PrintColoredTextLn("New Code:", c.OttoColor)
+			newCode, err = utils.PrintChatCompletionStream(stream)
+			if err != nil {
+				log.Errorf("Error printing chat completion stream: %s", err)
+				os.Exit(1)
+			}
+
+			confirmMsg := "Would you like to write the file with the new code? (y/N). Type your input to keep editing: "
+			if appendFile {
+				confirmMsg = "Would you like to append the new code to the file? (y/N). Type your input to keep editing: "
+			}
+
+			if !force {
+				confirm, err := utils.Input(confirmMsg)
+				if err != nil {
+					log.Errorf("Error getting input: %s", err)
+					os.Exit(1)
+				}
+
+				confirm = strings.ToLower(confirm)
+				if confirm == "n" || confirm == "no" {
+					os.Exit(0)
+				} else if confirm == "y" || confirm == "yes" {
+					break
+				} else {
+					codeTokens, err := calc.PreciseTokens(newCode)
+					if err != nil {
+						log.Errorf("Error calculating tokens: %s", err)
+						os.Exit(1)
+					}
+
+					maxTokens := calc.GetMaxTokens(c.Model) - codeTokens
+
+					var newMessages []openai.ChatCompletionMessage
+					newMessages = []openai.ChatCompletionMessage{
+						{
+							Role:    openai.ChatMessageRoleUser,
+							Content: "Use the following input to edit the code: " + confirm,
+						},
+						{
+							Role:    openai.ChatMessageRoleAssistant,
+							Content: newCode,
+						},
+					}
+					utils.ReverseSlice(messages)
+					for _, message := range messages {
+						if calc.PreciseTokensFromMessages(newMessages, c.Model) < maxTokens {
+							newMessages = append(newMessages, message)
+						}
+					}
+					utils.ReverseSlice(newMessages)
+					messages = newMessages
+					utils.PrintColoredText("Otto: ", c.OttoColor)
+					fmt.Println("Ok! Here is the new code, taking your input into account.")
+				}
 			}
 		}
 
