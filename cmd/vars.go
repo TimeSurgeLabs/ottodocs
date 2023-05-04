@@ -51,6 +51,12 @@ var currentTag string
 
 var contextFiles []string
 
+var displayHistory bool
+var loadHistory string
+var deleteHistory string
+var readOnly bool
+var clearHistory bool
+
 var log = l.NewWithOptions(os.Stderr, l.Options{
 	Level:           l.InfoLevel,
 	ReportTimestamp: false,
