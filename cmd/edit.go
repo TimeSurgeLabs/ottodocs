@@ -9,9 +9,11 @@ import (
 	"os"
 	"strings"
 
+	"github.com/chand1012/memory"
 	"github.com/chand1012/ottodocs/pkg/calc"
 	"github.com/chand1012/ottodocs/pkg/config"
 	"github.com/chand1012/ottodocs/pkg/constants"
+	"github.com/chand1012/ottodocs/pkg/git"
 	"github.com/chand1012/ottodocs/pkg/textfile"
 	"github.com/chand1012/ottodocs/pkg/utils"
 	l "github.com/charmbracelet/log"
@@ -96,6 +98,77 @@ Example: otto edit main.go --start 1 --end 10 --goal "Refactor the function"`,
 			prompt = "GOAL: " + chatPrompt + "\n\nFILE: " + filePath + "\n\n" + contents
 		}
 
+		client := openai.NewClient(c.APIKey)
+
+		if repoContext {
+			repo, err := git.GetRepo(".", "", false)
+			if err != nil {
+				log.Errorf("Error getting repo: %s", err)
+				os.Exit(1)
+			}
+
+			m, _, err := memory.New(":memory:")
+			if err != nil {
+				log.Errorf("Error creating memory: %s", err)
+				os.Exit(1)
+			}
+
+			for _, file := range repo.Files {
+				err = m.Add(file.Path, file.Contents)
+				if err != nil {
+					log.Errorf("Error indexing file: %s", err)
+					os.Exit(1)
+				}
+			}
+
+			queryConstructorPrompt := []openai.ChatCompletionMessage{
+				{
+					Role:    openai.ChatMessageRoleUser,
+					Content: "Convert this goal into a terms to use for a search query. They do not have to be organized, nor a complete sentence. Use no form of punctuation or quotations. Only return the query and nothing else: " + chatPrompt,
+				},
+			}
+
+			utils.PrintColoredText("Otto: ", c.OttoColor)
+			fmt.Println("Ok! Here is the query, taking your input into account.")
+			utils.PrintColoredText("Otto: ", c.OttoColor)
+			stream, err := client.CreateChatCompletionStream(context.Background(), openai.ChatCompletionRequest{
+				Model:    "gpt-3.5-turbo",
+				Messages: queryConstructorPrompt,
+			})
+
+			if err != nil {
+				log.Errorf("Error requesting from OpenAI: %s", err)
+				os.Exit(1)
+			}
+
+			query, err := utils.PrintChatCompletionStream(stream)
+			if err != nil {
+				log.Errorf("Error printing chat completion stream: %s", err)
+				os.Exit(1)
+			}
+
+			utils.PrintColoredText("Otto: ", c.OttoColor)
+			fmt.Println("Searching repo for files that match the query...")
+
+			resp, err := m.Search(query)
+			if err != nil {
+				log.Errorf("Error searching memory: %s", err)
+				os.Exit(1)
+			}
+
+			contextFiles = []string{}
+			for _, file := range resp {
+				contextFiles = append(contextFiles, file.ID)
+			}
+			log.Debugf("context files: %s", contextFiles)
+		}
+		tokens, err := calc.PreciseTokens(prompt)
+		if err != nil {
+			log.Errorf("Error calculating tokens: %s", err)
+			os.Exit(1)
+		}
+
+		maxTokens := calc.GetMaxTokens(c.Model)
 		if len(contextFiles) > 0 {
 			var contextContent string
 			for _, contextFile := range contextFiles {
@@ -104,11 +177,20 @@ Example: otto edit main.go --start 1 --end 10 --goal "Refactor the function"`,
 					log.Errorf("Error loading context file: %s", err)
 					continue
 				}
+				contentTokens, err := calc.PreciseTokens(contextContent)
+				if err != nil {
+					log.Errorf("Error loading context file: %s", err)
+					continue
+				}
+				if contentTokens+tokens > maxTokens {
+					break
+				}
 				prompt += "\n\nCONTEXT: " + contextFile + "\n\n" + contextContent
+				tokens += contentTokens
 			}
 		}
 
-		client := openai.NewClient(c.APIKey)
+		log.Debugf("prompt: %s", prompt)
 
 		messages = []openai.ChatCompletionMessage{
 			{
@@ -220,6 +302,7 @@ func init() {
 	editCmd.Flags().BoolVarP(&force, "force", "f", false, "Force overwrite of existing files")
 	editCmd.Flags().BoolVarP(&verbose, "verbose", "v", false, "Verbose output")
 	editCmd.Flags().BoolVarP(&appendFile, "append", "a", false, "Append to the end of a file instead of overwriting it")
+	editCmd.Flags().BoolVarP(&repoContext, "repo", "r", false, "Use the current repo as context")
 	editCmd.Flags().IntVarP(&startLine, "start", "s", 1, "Start line")
 	editCmd.Flags().IntVarP(&endLine, "end", "e", 0, "End line")
 	editCmd.Flags().StringVarP(&chatPrompt, "goal", "g", "", "Goal of the edit")

@@ -4,18 +4,18 @@ go 1.20
 
 require (
 	github.com/chand1012/git2gpt v0.4.1
-	github.com/chand1012/memory v0.3.0
+	github.com/chand1012/memory v0.4.0
 	github.com/charmbracelet/lipgloss v0.7.1
 	github.com/charmbracelet/log v0.2.1
 	github.com/pkoukk/tiktoken-go v0.1.1
-	github.com/sashabaranov/go-openai v1.9.0
+	github.com/sashabaranov/go-openai v1.9.3
 	github.com/spf13/cobra v1.7.0
 )
 
 require (
 	github.com/RoaringBitmap/roaring v1.2.3 // indirect
 	github.com/aymanbagabas/go-osc52/v2 v2.0.1 // indirect
-	github.com/bits-and-blooms/bitset v1.6.0 // indirect
+	github.com/bits-and-blooms/bitset v1.7.0 // indirect
 	github.com/blevesearch/bleve v1.0.14 // indirect
 	github.com/blevesearch/go-porterstemmer v1.0.3 // indirect
 	github.com/blevesearch/mmap-go v1.0.4 // indirect
@@ -49,7 +49,7 @@ require (
 	github.com/steveyen/gtreap v0.1.0 // indirect
 	github.com/willf/bitset v1.1.11 // indirect
 	go.etcd.io/bbolt v1.3.7 // indirect
-	golang.org/x/sys v0.7.0 // indirect
+	golang.org/x/sys v0.8.0 // indirect
 	google.golang.org/protobuf v1.30.0 // indirect
 	gopkg.in/check.v1 v1.0.0-20201130134442-10cb98267c6c // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect

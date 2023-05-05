@@ -56,6 +56,7 @@ var loadHistory string
 var deleteHistory string
 var readOnly bool
 var clearHistory bool
+var repoContext bool
 
 var log = l.NewWithOptions(os.Stderr, l.Options{
 	Level:           l.InfoLevel,

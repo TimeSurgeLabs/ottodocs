@@ -5,7 +5,6 @@ package cmd
 
 import (
 	"os"
-	"path/filepath"
 
 	"github.com/chand1012/git2gpt/prompt"
 	"github.com/chand1012/memory"
@@ -74,12 +73,10 @@ Requires a path to a repository or file as a positional argument.`,
 				os.Exit(1)
 			}
 			log.Debug("Constructing repo memory...")
-			// Define a temporary path for the index file
-			testIndexPath := filepath.Join(repoPath, ".index.memory")
 
 			log.Debug("Creating memory index...")
 			// Create a new memory index
-			m, _, err := memory.New(testIndexPath)
+			m, _, err := memory.New(":memory:")
 			if err != nil {
 				log.Errorf("Failed to create memory index: %s", err)
 				os.Exit(1)
