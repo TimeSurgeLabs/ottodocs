@@ -114,6 +114,9 @@ Example: otto edit main.go --start 1 --end 10 --goal "Refactor the function"`,
 			}
 
 			for _, file := range repo.Files {
+				if file.Path == fileName {
+					continue
+				}
 				err = m.Add(file.Path, file.Contents)
 				if err != nil {
 					log.Errorf("Error indexing file: %s", err)
@@ -253,7 +256,7 @@ Example: otto edit main.go --start 1 --end 10 --goal "Refactor the function"`,
 					newMessages = []openai.ChatCompletionMessage{
 						{
 							Role:    openai.ChatMessageRoleUser,
-							Content: "Use the following input to edit the code: " + confirm,
+							Content: "Use the following input to edit the code: " + confirm + "\n\nMake sure to only output the code, do not print anything else.",
 						},
 						{
 							Role:    openai.ChatMessageRoleAssistant,

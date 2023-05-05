@@ -54,12 +54,40 @@ otto config --model $MODEL_NAME
 You can add a GitHub Personal Access Token for opening PRs by running:
 
 ```sh
-otto config --token $GITHUB_TOKEN
+otto config --token $GITHUB_TOKEN # Optional. Only needed for opening PRs and reading Issues
 ```
 
 Make sure that your access token has the `repo` scope.
 
-Once that is complete, you can start generating documentation by running the following command:
+Once that is complete, you can start running commands!
+
+## Usage
+
+More detailed usage can be found in the [documentation](https://ottodocs.chand1012.dev/docs/usage/otto).
+
+### Code Generation
+
+![Made with VHS](https://vhs.charm.sh/vhs-5A6u3ITYSIp2qd1T7XdYEM.gif)
+
+Otto can generate code and save it directly to your project! To do this, you can run the following command:
+
+```sh
+otto edit <path to file> -g "Write me a Python function that returns the sum of two numbers"
+```
+
+You can also give Otto additional context to help it generate better code:
+
+```sh
+otto edit <path to file> -g "Write me a Python function that returns the sum of two numbers" -c hello_world.py
+```
+
+Or you can have it use as much of the repo as possible as context:
+
+```sh
+otto edit <path to file> -g "Write me a Python function that returns the sum of two numbers" -r
+```
+
+### Documentation
 
 ```sh
 otto docs <path to repo or file>
@@ -70,6 +98,8 @@ Or for a single file, you can run:
 ```sh
 otto doc -f <path to file>
 ```
+
+### Ask
 
 Ask a question about a repo:
 
