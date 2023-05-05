@@ -109,6 +109,8 @@ otto ask . -q "What does LoadFile do differently than ReadFile?"
 
 Generate a commit message:
 
+![Made with VHS](https://vhs.charm.sh/vhs-4Uti5pLyUQ85pueoJH5IQ.gif)
+
 ```sh
 otto commit # optionally add --push to push to remote
 ```
