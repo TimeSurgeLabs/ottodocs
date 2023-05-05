@@ -107,6 +107,8 @@ Ask a question about a repo:
 otto ask . -q "What does LoadFile do differently than ReadFile?"
 ```
 
+### Commit Messages
+
 Generate a commit message:
 
 ![Made with VHS](https://vhs.charm.sh/vhs-4Uti5pLyUQ85pueoJH5IQ.gif)
@@ -115,12 +117,24 @@ Generate a commit message:
 otto commit # optionally add --push to push to remote
 ```
 
+### Pull Request
+
 Generate a pull request:
 
 ```sh
 # make sure you are creating the PR on the correct base branch
 otto pr -b main # optionally add --publish to publish the Pull Request
 ```
+
+### Release Notes
+
+Generate release notes:
+
+```sh
+otto release # optionally add --publish to publish the release
+```
+
+### Command Ask
 
 Ask it about commands:
 
