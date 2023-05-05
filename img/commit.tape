@@ -8,4 +8,4 @@ Set Height 900
 Type "otto commit" Sleep 500ms  Enter
 Sleep 5s
 Type "y" Sleep 500ms Enter
-Sleep 1s
+Sleep 3s
