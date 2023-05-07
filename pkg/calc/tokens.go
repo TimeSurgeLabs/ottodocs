@@ -59,7 +59,7 @@ func PreciseTokensFromMessages(messages []openai.ChatCompletionMessage, model st
 	if model == "gpt-3.5-turbo-0301" || model == "gpt-3.5-turbo" {
 		tokens_per_message = 4
 		tokens_per_name = -1
-	} else if strings.Contains(model, "4") {
+	} else if strings.Contains(model, "gpt-4") {
 		tokens_per_message = 3
 		tokens_per_name = 1
 	} else {
