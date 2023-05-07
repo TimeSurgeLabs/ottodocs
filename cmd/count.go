@@ -9,6 +9,7 @@ import (
 
 	"github.com/chand1012/ottodocs/pkg/calc"
 	"github.com/chand1012/ottodocs/pkg/config"
+	"github.com/chand1012/ottodocs/pkg/git"
 	"github.com/chand1012/ottodocs/pkg/utils"
 	"github.com/spf13/cobra"
 )
@@ -32,7 +33,7 @@ otto count -c contextfile.txt -g "prompt"`,
 
 		var prompt string
 
-		if chatPrompt == "" && len(contextFiles) == 0 {
+		if chatPrompt == "" && len(contextFiles) == 0 && !repoContext {
 			log.Error("Requires a prompt or context file as an argument. Example: otto count -c contextfile.txt -g \"prompt\"")
 			os.Exit(1)
 		}
@@ -41,13 +42,26 @@ otto count -c contextfile.txt -g "prompt"`,
 			prompt = "GOAL:" + chatPrompt
 		}
 
-		for _, contextFile := range contextFiles {
-			content, err := utils.LoadFile(contextFile)
+		if repoContext {
+			repo, err := git.GetRepo(".", "", false)
 			if err != nil {
-				log.Errorf("Error loading file: %s", err)
+				log.Errorf("Error getting repo: %s", err)
 				os.Exit(1)
 			}
-			prompt += "\n\nFILE: " + contextFile + "\n\n" + content + "\n"
+
+			for _, file := range repo.Files {
+				content := file.Contents
+				prompt += "\n\nFILE: " + file.Path + "\n\n" + content + "\n"
+			}
+		} else {
+			for _, contextFile := range contextFiles {
+				content, err := utils.LoadFile(contextFile)
+				if err != nil {
+					log.Errorf("Error loading file: %s", err)
+					os.Exit(1)
+				}
+				prompt += "\n\nFILE: " + contextFile + "\n\n" + content + "\n"
+			}
 		}
 
 		tokens, err := calc.PreciseTokens(prompt)
@@ -66,4 +80,5 @@ func init() {
 
 	countCmd.Flags().StringVarP(&chatPrompt, "goal", "g", "", "Prompt for token count")
 	countCmd.Flags().StringSliceVarP(&contextFiles, "context", "c", []string{}, "Context files")
+	countCmd.Flags().BoolVarP(&repoContext, "repo", "r", false, "Use the current repository as context")
 }

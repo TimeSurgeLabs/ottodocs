@@ -29,6 +29,8 @@ install: build
   rm -rf $GOPATH/bin/otto
   cp bin/otto $GOPATH/bin
 
+i: install
+
 add command:
   cobra-cli add {{command}}
 
