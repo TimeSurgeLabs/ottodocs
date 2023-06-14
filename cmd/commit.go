@@ -12,6 +12,7 @@ import (
 	"github.com/chand1012/ottodocs/pkg/ai"
 	"github.com/chand1012/ottodocs/pkg/calc"
 	"github.com/chand1012/ottodocs/pkg/config"
+	"github.com/chand1012/ottodocs/pkg/constants"
 	"github.com/chand1012/ottodocs/pkg/git"
 	"github.com/chand1012/ottodocs/pkg/utils"
 	l "github.com/charmbracelet/log"
@@ -158,16 +159,17 @@ var commitCmd = &cobra.Command{
 		}
 
 		if len(msg) > 75 {
-			// truncate to the first period or the first newline
-			newMsg := msg
-			if strings.Contains(msg, "\n") {
-				newMsg = strings.Split(msg, "\n")[0]
-			} else if strings.Contains(msg, ".") {
-				newMsg = strings.Split(msg, ".")[0]
+			// summarize the message
+			stream, err := ai.SimpleStreamRequest(constants.SUMMARIZE_PROMPT+msg, conf)
+			if err != nil {
+				log.Errorf("Error summarizing commit message: %s", err)
+				os.Exit(1)
 			}
-			if len(newMsg) != len(msg) {
-				utils.PrintColoredTextLn("Truncated commit message: "+newMsg, conf.OttoColor)
-				msg = newMsg
+			utils.PrintColoredText("Summarized Commit Msg: ", conf.OttoColor)
+			msg, err = utils.PrintChatCompletionStream(stream)
+			if err != nil {
+				log.Errorf("Error printing chat completion stream: %s", err)
+				os.Exit(1)
 			}
 		}
 

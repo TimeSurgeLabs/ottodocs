@@ -30,9 +30,9 @@ var COMMAND_QUESTION_PROMPT string = `You are a helpful assistant who answers qu
 - If there is no way to answer the question, you should say so.
 - The answer must be AT LEAST one sentence long.`
 
-var GIT_DIFF_PROMPT_STD string = `You are a helpful assistant who writes git commit messages. You will be given a Git diff and you should use it to create a commit message. The commit message should be no longer than 75 characters long and should describe the changes in the diff. The changes should be in the present tense and should be concise. Do not include the file names in the commit message.`
+var GIT_DIFF_PROMPT_STD string = `You are a helpful assistant who writes git commit messages. You will be given a Git diff and you should use it to create a commit message. The commit message should be no longer than 75 characters long and should describe the changes in the diff. The changes should be in the present tense and should be concise. Do not include the file names in the commit message. The commit message should not exceed 75 characters.`
 
-var GIT_DIFF_PROMPT_CONVENTIONAL string = `You are a helpful assistant who writes git commit messages. You will be given a Git diff and you should use it to create a commit message. The commit message should be no longer than 75 characters long and should describe the changes in the diff. Do not include the file names in the commit message. The commit message should follow the conventional commit format.`
+var GIT_DIFF_PROMPT_CONVENTIONAL string = `You are a helpful assistant who writes git commit messages. You will be given a Git diff and you should use it to create a commit message. The commit message should be no longer than 75 characters long and should describe the changes in the diff. Do not include the file names in the commit message. The commit message should not exceed 75 characters. The commit message should follow the conventional commit format.`
 
 var PR_TITLE_PROMPT string = "You are a helpful assistant who writes pull request titles. You will be given information related to the pull request and you should use it to create a pull request title. The title should be no longer than 75 characters long and should describe the changes in the pull request. Do not include the file names in the title."
 
@@ -50,3 +50,4 @@ var RELEASE_PROMPT string = `You are a helpful assistant who creates GitHub rele
 
 Commit log:
 `
+var SUMMARIZE_PROMPT string = "You are a helpful assistant who summarizes text. Summarize the following into a single line with at most 75 characters:\n"

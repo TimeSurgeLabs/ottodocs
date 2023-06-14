@@ -12,7 +12,7 @@ import (
 	"github.com/spf13/cobra"
 )
 
-var VALID_MODELS = []string{"gpt-4", "gpt-4-0314", "gpt-4-32k", "gpt-4-32k-0314", "gpt-3.5-turbo", "gpt-3.5-turbo-0301"}
+var VALID_MODELS = []string{"gpt-4", "gpt-4-0314", "gpt-4-32k", "gpt-4-32k-0314", "gpt-3.5-turbo", "gpt-3.5-turbo-0301", "gpt-3.5-turbo-16k", "gpt-3.5-turbo-0613"}
 
 // configCmd represents the config command
 var configCmd = &cobra.Command{
@@ -21,7 +21,7 @@ var configCmd = &cobra.Command{
 	Long: `Configures ottodocs. Allows user to specify OpenAI API Key, GitHub Token, and the model with a single command.
 
 Default model is gpt-3.5-turbo.
-Valid models are: gpt-4, gpt-4-0314, gpt-4-32k, gpt-4-32k-0314, gpt-3.5-turbo, gpt-3.5-turbo-0301
+Valid models are: gpt-4, gpt-4-0314, gpt-4-32k, gpt-4-32k-0314, gpt-3.5-turbo, gpt-3.5-turbo-0301, gpt-3.5-turbo-16k, gpt-3.5-turbo-0613
 See here for more information on the Models available: https://platform.openai.com/docs/models/model-endpoint-compatibility	
 
 GitHub Tokens need access to the repo scope.
