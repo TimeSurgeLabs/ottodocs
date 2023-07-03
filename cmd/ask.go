@@ -12,11 +12,11 @@ import (
 	"github.com/sashabaranov/go-openai"
 	"github.com/spf13/cobra"
 
-	"github.com/chand1012/ottodocs/pkg/ai"
-	"github.com/chand1012/ottodocs/pkg/calc"
-	"github.com/chand1012/ottodocs/pkg/config"
-	"github.com/chand1012/ottodocs/pkg/git"
-	"github.com/chand1012/ottodocs/pkg/utils"
+	"github.com/TimeSurgeLabs/ottodocs/pkg/ai"
+	"github.com/TimeSurgeLabs/ottodocs/pkg/calc"
+	"github.com/TimeSurgeLabs/ottodocs/pkg/config"
+	"github.com/TimeSurgeLabs/ottodocs/pkg/git"
+	"github.com/TimeSurgeLabs/ottodocs/pkg/utils"
 )
 
 // askCmd represents the ask command

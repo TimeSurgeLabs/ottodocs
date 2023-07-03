@@ -1,8 +1,8 @@
 package ai
 
 import (
-	"github.com/chand1012/ottodocs/pkg/config"
-	"github.com/chand1012/ottodocs/pkg/constants"
+	"github.com/TimeSurgeLabs/ottodocs/pkg/config"
+	"github.com/TimeSurgeLabs/ottodocs/pkg/constants"
 	"github.com/sashabaranov/go-openai"
 )
 

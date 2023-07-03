@@ -4,7 +4,7 @@ import (
 	"context"
 	"errors"
 
-	"github.com/chand1012/ottodocs/pkg/config"
+	"github.com/TimeSurgeLabs/ottodocs/pkg/config"
 	"github.com/sashabaranov/go-openai"
 )
 

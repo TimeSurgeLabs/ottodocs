@@ -3,8 +3,8 @@ package ai
 import (
 	"strings"
 
-	"github.com/chand1012/ottodocs/pkg/config"
-	"github.com/chand1012/ottodocs/pkg/constants"
+	"github.com/TimeSurgeLabs/ottodocs/pkg/config"
+	"github.com/TimeSurgeLabs/ottodocs/pkg/constants"
 )
 
 func Markdown(filePath, contents, chatPrompt string, conf *config.Config) (string, error) {

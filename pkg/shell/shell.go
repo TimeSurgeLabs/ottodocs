@@ -5,7 +5,7 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/chand1012/ottodocs/pkg/utils"
+	"github.com/TimeSurgeLabs/ottodocs/pkg/utils"
 )
 
 const ZSH_HISTORY_PATH = ".zsh_history"

@@ -13,7 +13,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/chand1012/ottodocs/pkg/config"
+	"github.com/TimeSurgeLabs/ottodocs/pkg/config"
 	"github.com/charmbracelet/log"
 	"github.com/sashabaranov/go-openai"
 )

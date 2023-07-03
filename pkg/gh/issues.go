@@ -6,7 +6,7 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/chand1012/ottodocs/pkg/config"
+	"github.com/TimeSurgeLabs/ottodocs/pkg/config"
 )
 
 func GetIssue(owner, repo string, issueNumber int, conf *config.Config) (*IssueWithComments, error) {

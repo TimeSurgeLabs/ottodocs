@@ -10,10 +10,10 @@ import (
 	l "github.com/charmbracelet/log"
 	"github.com/spf13/cobra"
 
-	"github.com/chand1012/ottodocs/pkg/ai"
-	"github.com/chand1012/ottodocs/pkg/config"
-	"github.com/chand1012/ottodocs/pkg/shell"
-	"github.com/chand1012/ottodocs/pkg/utils"
+	"github.com/TimeSurgeLabs/ottodocs/pkg/ai"
+	"github.com/TimeSurgeLabs/ottodocs/pkg/config"
+	"github.com/TimeSurgeLabs/ottodocs/pkg/shell"
+	"github.com/TimeSurgeLabs/ottodocs/pkg/utils"
 )
 
 // in the future this should fully wrap the shell

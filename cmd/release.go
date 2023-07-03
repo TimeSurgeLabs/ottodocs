@@ -8,12 +8,12 @@ import (
 	"os"
 	"strings"
 
-	"github.com/chand1012/ottodocs/pkg/ai"
-	"github.com/chand1012/ottodocs/pkg/config"
-	"github.com/chand1012/ottodocs/pkg/constants"
-	"github.com/chand1012/ottodocs/pkg/gh"
-	"github.com/chand1012/ottodocs/pkg/git"
-	"github.com/chand1012/ottodocs/pkg/utils"
+	"github.com/TimeSurgeLabs/ottodocs/pkg/ai"
+	"github.com/TimeSurgeLabs/ottodocs/pkg/config"
+	"github.com/TimeSurgeLabs/ottodocs/pkg/constants"
+	"github.com/TimeSurgeLabs/ottodocs/pkg/gh"
+	"github.com/TimeSurgeLabs/ottodocs/pkg/git"
+	"github.com/TimeSurgeLabs/ottodocs/pkg/utils"
 	l "github.com/charmbracelet/log"
 	"github.com/spf13/cobra"
 )

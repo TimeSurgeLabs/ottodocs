@@ -8,19 +8,19 @@ Ottodocs is a command-line tool built in Go that utilizes OpenAI's ChatGPT API t
 
 There are two methods to install OttoDocs:
 
-1. **Precompiled binaries:** Download the precompiled binaries from the [GitHub releases tab](https://github.com/chand1012/ottodocs/releases).
+1. **Precompiled binaries:** Download the precompiled binaries from the [GitHub releases tab](https://github.com/TimeSurgeLabs/ottodocs/releases).
 2. **Build from source:** Clone the repo and build the binary by running the following commands:
 
 ### Installing Precompiled Binaries
 
-Simply download the binary for your platform from the [GitHub releases tab](https://github.com/chand1012/ottodocs/releases) and place it in your `$PATH` .
+Simply download the binary for your platform from the [GitHub releases tab](https://github.com/TimeSurgeLabs/ottodocs/releases) and place it in your `$PATH` .
 
 ### Building From Source
 
 OttoDocs utilizes the `just` command runner for building and running tasks, making maintaining the project easier. If you do not have `just` installed, see [here](https://just.systems/man/en/chapter_5.html) for installation methods. Ottodocs requires [Go 1.20+](https://go.dev/dl/) to build.
 
 ```sh
-git clone https://github.com/chand1012/ottodocs.git
+git clone https://github.com/TimeSurgeLabs/ottodocs.git
 cd ottodocs
 just build # will build to bin/otto
 # or

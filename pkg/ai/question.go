@@ -6,9 +6,9 @@ import (
 	"github.com/chand1012/git2gpt/prompt"
 	"github.com/sashabaranov/go-openai"
 
-	"github.com/chand1012/ottodocs/pkg/calc"
-	"github.com/chand1012/ottodocs/pkg/config"
-	"github.com/chand1012/ottodocs/pkg/constants"
+	"github.com/TimeSurgeLabs/ottodocs/pkg/calc"
+	"github.com/TimeSurgeLabs/ottodocs/pkg/config"
+	"github.com/TimeSurgeLabs/ottodocs/pkg/constants"
 )
 
 func Question(files []prompt.GitFile, chatPrompt string, conf *config.Config, verbose bool) (*openai.ChatCompletionStream, error) {

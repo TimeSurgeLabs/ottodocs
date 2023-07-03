@@ -1,7 +1,7 @@
 DATE := `date +"%Y-%m-%d_%H:%M:%S"`
 GIT_COMMIT := `git rev-parse HEAD`
 VERSION_TAG := `git describe --tags --abbrev=0`
-LD_FLAGS := "-X github.com/chand1012/ottodocs/cmd.buildDate=" + DATE + " -X github.com/chand1012/ottodocs/cmd.commitHash=" + GIT_COMMIT + " -X github.com/chand1012/ottodocs/cmd.tag=" + VERSION_TAG
+LD_FLAGS := "-X github.com/TimeSurgeLabs/ottodocs/cmd.buildDate=" + DATE + " -X github.com/TimeSurgeLabs/ottodocs/cmd.commitHash=" + GIT_COMMIT + " -X github.com/TimeSurgeLabs/ottodocs/cmd.tag=" + VERSION_TAG
 # EXEC_EXT := `[[ "$(uname -o)" == "Msys" ]] && echo ".exe"` # uncomment on windows
 EXEC_EXT := "" # comment out on windows
 
@@ -42,7 +42,7 @@ crossbuild:
 
   # Set the name of the output binary and Go package
   BINARY_NAME="otto"
-  GO_PACKAGE="github.com/chand1012/ottodocs"
+  GO_PACKAGE="github.com/TimeSurgeLabs/ottodocs"
 
   mkdir -p dist
 

@@ -6,9 +6,9 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/chand1012/ottodocs/pkg/config"
-	"github.com/chand1012/ottodocs/pkg/constants"
-	"github.com/chand1012/ottodocs/pkg/textfile"
+	"github.com/TimeSurgeLabs/ottodocs/pkg/config"
+	"github.com/TimeSurgeLabs/ottodocs/pkg/constants"
+	"github.com/TimeSurgeLabs/ottodocs/pkg/textfile"
 )
 
 func extractLineNumber(line string) (int, error) {

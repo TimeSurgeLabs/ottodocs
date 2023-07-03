@@ -6,7 +6,7 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/chand1012/ottodocs/pkg/config"
+	"github.com/TimeSurgeLabs/ottodocs/pkg/config"
 )
 
 func CreateDraftRelease(owner, repo, title, body, tag string, conf *config.Config) error {

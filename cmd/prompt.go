@@ -7,9 +7,9 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/TimeSurgeLabs/ottodocs/pkg/calc"
+	"github.com/TimeSurgeLabs/ottodocs/pkg/git"
 	"github.com/chand1012/git2gpt/prompt"
-	"github.com/chand1012/ottodocs/pkg/calc"
-	"github.com/chand1012/ottodocs/pkg/git"
 	"github.com/spf13/cobra"
 )
 

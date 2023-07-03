@@ -7,10 +7,10 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/chand1012/ottodocs/pkg/calc"
-	"github.com/chand1012/ottodocs/pkg/config"
-	"github.com/chand1012/ottodocs/pkg/git"
-	"github.com/chand1012/ottodocs/pkg/utils"
+	"github.com/TimeSurgeLabs/ottodocs/pkg/calc"
+	"github.com/TimeSurgeLabs/ottodocs/pkg/config"
+	"github.com/TimeSurgeLabs/ottodocs/pkg/git"
+	"github.com/TimeSurgeLabs/ottodocs/pkg/utils"
 	"github.com/spf13/cobra"
 )
 

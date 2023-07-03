@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/chand1012/ottodocs/cmd"
+	"github.com/TimeSurgeLabs/ottodocs/cmd"
 	"github.com/spf13/cobra/doc"
 )
 

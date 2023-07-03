@@ -1,4 +1,4 @@
-module github.com/chand1012/ottodocs
+module github.com/TimeSurgeLabs/ottodocs
 
 go 1.20
 

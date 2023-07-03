@@ -7,8 +7,8 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/chand1012/ottodocs/pkg/config"
-	"github.com/chand1012/ottodocs/pkg/utils"
+	"github.com/TimeSurgeLabs/ottodocs/pkg/config"
+	"github.com/TimeSurgeLabs/ottodocs/pkg/utils"
 	"github.com/spf13/cobra"
 )
 

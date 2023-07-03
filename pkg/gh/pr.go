@@ -7,7 +7,7 @@ import (
 	"io"
 	"net/http"
 
-	"github.com/chand1012/ottodocs/pkg/config"
+	"github.com/TimeSurgeLabs/ottodocs/pkg/config"
 )
 
 func OpenPullRequest(data map[string]string, owner string, repo string, conf *config.Config) (int, error) {

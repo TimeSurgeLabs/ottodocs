@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/chand1012/ottodocs/pkg/calc"
-	"github.com/chand1012/ottodocs/pkg/utils"
+	"github.com/TimeSurgeLabs/ottodocs/pkg/calc"
+	"github.com/TimeSurgeLabs/ottodocs/pkg/utils"
 )
 
 type SplitFile struct {
