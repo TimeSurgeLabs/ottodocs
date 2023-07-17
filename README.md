@@ -65,6 +65,16 @@ Once that is complete, you can start running commands!
 
 More detailed usage can be found in the [documentation](https://ottodocs.chand1012.dev/docs/usage/otto).
 
+### Chat
+
+![Made with VHS](https://vhs.charm.sh/vhs-7lC4zu09dmW4TZFOyQtCKI.gif)
+
+To Chat with ChatGPT from the commandline, use chat.
+
+```
+otto chat
+```
+
 ### Code Generation
 
 ![Made with VHS](https://vhs.charm.sh/vhs-5A6u3ITYSIp2qd1T7XdYEM.gif)
