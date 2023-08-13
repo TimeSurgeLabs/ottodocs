@@ -10,7 +10,11 @@ import (
 
 func request(systemMsg, userMsg string, conf *config.Config) (string, error) {
 
-	c := openai.NewClient(conf.APIKey)
+	config := openai.DefaultConfig(conf.APIKey)
+	config.OrgID = conf.Org
+
+	c := openai.NewClientWithConfig(config)
+
 	ctx := context.Background()
 
 	req := openai.ChatCompletionRequest{
@@ -40,7 +44,11 @@ func request(systemMsg, userMsg string, conf *config.Config) (string, error) {
 }
 
 func requestStream(systemMsg, userMsg string, conf *config.Config) (*openai.ChatCompletionStream, error) {
-	c := openai.NewClient(conf.APIKey)
+	config := openai.DefaultConfig(conf.APIKey)
+	config.OrgID = conf.Org
+
+	c := openai.NewClientWithConfig(config)
+
 	ctx := context.Background()
 
 	req := openai.ChatCompletionRequest{

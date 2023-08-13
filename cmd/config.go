@@ -39,7 +39,7 @@ GitHub Token Generation: https://github.com/settings/tokens
 		}
 
 		// if none of the config options are provided, print a warning
-		if apiKey == "" && model == "" && ghToken == "" && userColor == "" && ottoColor == "" {
+		if apiKey == "" && model == "" && ghToken == "" && userColor == "" && ottoColor == "" && organization == "" {
 			log.Warn("No configuration options provided")
 			os.Exit(0)
 		}
@@ -79,6 +79,12 @@ GitHub Token Generation: https://github.com/settings/tokens
 			c.OttoColor = ottoColor
 		}
 
+		// if the organization is provided, set it
+		if organization != "" {
+			fmt.Println("Setting organization...")
+			c.Org = organization
+		}
+
 		// save the config
 		err = c.Save()
 		if err != nil {
@@ -103,4 +109,6 @@ func init() {
 	configCmd.Flags().StringVarP(&userColor, "userColor", "u", "", "User color for configuration")
 	// set otto color
 	configCmd.Flags().StringVarP(&ottoColor, "ottoColor", "o", "", "Otto color for configuration")
+	// set organization
+	configCmd.Flags().StringVarP(&organization, "organization", "g", "", "Organization to use for documentation")
 }

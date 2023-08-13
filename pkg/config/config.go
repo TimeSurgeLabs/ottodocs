@@ -10,6 +10,7 @@ import (
 // Config represents the configuration file
 type Config struct {
 	APIKey    string `json:"api_key"`
+	Org       string `json:"org_id"`
 	Model     string `json:"model"`
 	GHToken   string `json:"gh_token"`
 	Signature string `json:"signature"`
