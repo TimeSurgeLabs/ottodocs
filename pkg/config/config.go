@@ -16,6 +16,7 @@ type Config struct {
 	Signature string `json:"signature"`
 	UserColor string `json:"user_color"`
 	OttoColor string `json:"otto_color"`
+	BaseURL   string `json:"base_url"`
 }
 
 // also returns the path to the config file
@@ -49,7 +50,7 @@ func createIfNotExists() (string, error) {
 			APIKey:    "",
 			Model:     "gpt-3.5-turbo",
 			GHToken:   "",
-			Signature: "Created by [OttoDocs 🦦](https://ottodocs.chand1012.dev/)",
+			Signature: "Created by [OttoDocs 🦦](https://ottodocs.timesurgelabs.com/)",
 			UserColor: "#87CEEB",
 			OttoColor: "#1BFFE4",
 		}

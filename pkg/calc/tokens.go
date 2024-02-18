@@ -45,6 +45,9 @@ func GetMaxTokens(model string) int {
 	if strings.Contains(model, "4") {
 		return 8192
 	}
+	if strings.Contains(model, "4-turbo") {
+		return 128000
+	}
 
 	return 4096
 }

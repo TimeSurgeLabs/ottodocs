@@ -8,12 +8,18 @@ import (
 	"github.com/sashabaranov/go-openai"
 )
 
-func request(systemMsg, userMsg string, conf *config.Config) (string, error) {
-
+func makeClient(conf *config.Config) *openai.Client {
 	config := openai.DefaultConfig(conf.APIKey)
 	config.OrgID = conf.Org
+	if config.BaseURL != "" {
+		config.BaseURL = conf.BaseURL
+	}
 
-	c := openai.NewClientWithConfig(config)
+	return openai.NewClientWithConfig(config)
+}
+
+func request(systemMsg, userMsg string, conf *config.Config) (string, error) {
+	c := makeClient(conf)
 
 	ctx := context.Background()
 
@@ -44,10 +50,7 @@ func request(systemMsg, userMsg string, conf *config.Config) (string, error) {
 }
 
 func requestStream(systemMsg, userMsg string, conf *config.Config) (*openai.ChatCompletionStream, error) {
-	config := openai.DefaultConfig(conf.APIKey)
-	config.OrgID = conf.Org
-
-	c := openai.NewClientWithConfig(config)
+	c := makeClient(conf)
 
 	ctx := context.Background()
 
@@ -69,7 +72,8 @@ func requestStream(systemMsg, userMsg string, conf *config.Config) (*openai.Chat
 }
 
 func SimpleRequest(prompt string, conf *config.Config) (string, error) {
-	c := openai.NewClient(conf.APIKey)
+	c := makeClient(conf)
+
 	ctx := context.Background()
 
 	req := openai.ChatCompletionRequest{
@@ -95,7 +99,8 @@ func SimpleRequest(prompt string, conf *config.Config) (string, error) {
 }
 
 func SimpleStreamRequest(prompt string, conf *config.Config) (*openai.ChatCompletionStream, error) {
-	c := openai.NewClient(conf.APIKey)
+	c := makeClient(conf)
+
 	ctx := context.Background()
 
 	req := openai.ChatCompletionRequest{

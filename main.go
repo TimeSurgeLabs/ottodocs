@@ -1,5 +1,5 @@
 /*
-Copyright © 2023 Chandler <chandler@chand1012.dev>
+Copyright © 2024 TimeSurgeLabs <chandler@timesurgelabs.com>
 */
 package main
 

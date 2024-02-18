@@ -51,6 +51,8 @@ var currentTag string
 
 var contextFiles []string
 
+// var routerFiles []string
+
 var displayHistory bool
 var loadHistory string
 var deleteHistory string
