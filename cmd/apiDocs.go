@@ -8,6 +8,7 @@ import (
 	"os"
 	"path/filepath"
 
+	"github.com/chand1012/git2gpt/prompt"
 	l "github.com/charmbracelet/log"
 	"github.com/spf13/cobra"
 
@@ -42,8 +43,24 @@ func init() {
 	apiDocsCmd.Flags().BoolVarP(&appendFile, "append", "a", false, "Append to the original file if the file exists.")
 	apiDocsCmd.Flags().BoolVarP(&verbose, "verbose", "v", false, "Enable verbose logging.")
 	apiDocsCmd.Flags().StringVarP(&outputFile, "output", "o", "", "Path to the output file.")
-	// apiDocsCmd.Flags().StringSliceVarP(&routerFiles, "routerFiles", "r", []string{}, "Files that contain router information.")
-	// apiDocsCmd.Flags().StringSliceVarP(&contextFiles, "contextFiles", "c", []string{}, "Files that contain context information.")
+	apiDocsCmd.Flags().StringSliceVarP(&routerFiles, "routerFiles", "r", []string{}, "Files that contain router information.")
+	apiDocsCmd.Flags().StringSliceVarP(&contextFiles, "contextFiles", "c", []string{}, "Files that contain context information.")
+}
+
+func loadAllFiles(repo *prompt.GitRepo, repoPath string) []string {
+	var files []string
+	for _, file := range repo.Files {
+		path := filepath.Join(repoPath, file.Path)
+		contents, err := utils.LoadFile(path)
+		if err != nil {
+			log.Warnf("Error loading file %s: %s", path, err)
+			continue
+		}
+		contents = `# ` + file.Path + "\n\n" + contents + "\n\n---\n\n"
+		files = append(files, contents)
+	}
+	return files
+
 }
 
 func run(cmd *cobra.Command, args []string) {
@@ -97,23 +114,51 @@ func run(cmd *cobra.Command, args []string) {
 		conf.BaseURL = ""
 	}
 
-	var files []string
-	for _, file := range repo.Files {
-		path := filepath.Join(repoPath, file.Path)
-		contents, err := utils.LoadFile(path)
-		if err != nil {
-			log.Warnf("Error loading file %s: %s", path, err)
-			continue
-		}
-		contents = `# ` + file.Path + "\n\n" + contents + "\n\n---\n\n"
-		files = append(files, contents)
-	}
+	var content string
+	// This is the dumb document.
+	// No router or context files to choose from, so its whatever the AI thinks
+	if len(routerFiles) == 0 && len(contextFiles) == 0 {
+		files := loadAllFiles(repo, repoPath)
 
-	fmt.Println("Documenting repo...")
-	content, err := ai.APIDocs(files, conf)
-	if err != nil {
-		log.Error(err)
-		os.Exit(1)
+		fmt.Println("Documenting repo...")
+		content, err = ai.APIDocs(files, conf)
+		if err != nil {
+			panic(err)
+		}
+	} else if len(contextFiles) == 0 {
+		// if the router files are specified, but not the context files
+		// assume they want the whole repo but extract the router files
+		routerFilePaths, err := utils.GlobAll(routerFiles)
+		if err != nil {
+			panic(err)
+		}
+
+		var routerFileContents []string
+		for _, path := range routerFilePaths {
+			contents, err := utils.LoadFile(path)
+			if err != nil {
+				log.Warnf("Error loading file %s: %s", path, err)
+				continue
+			}
+			routerFileContents = append(routerFileContents, contents)
+		}
+
+		endpoints, err := ai.APIEndpoints(routerFileContents, conf)
+		if err != nil {
+			panic(err)
+		}
+
+		files := loadAllFiles(repo, repoPath)
+		fmt.Println("Documenting repo...")
+		for _, endpoint := range endpoints {
+			fmt.Printf("Documenting endpoint %s...\n", endpoint)
+			endpointContent, err := ai.APIDocumentEndpoint(endpoint, files, conf)
+			if err != nil {
+				log.Errorf("Error documenting endpoint %s: %s", endpoint, err)
+				continue
+			}
+			content += "\n\n" + endpointContent
+		}
 	}
 
 	exists := false
@@ -125,20 +170,19 @@ func run(cmd *cobra.Command, args []string) {
 		}
 		exists = true
 	}
+
 	var file *os.File
 	if !exists {
 		// write the string to the output file
 		file, err = os.Create(outputFile)
 		if err != nil {
-			log.Error(err)
-			os.Exit(1)
+			panic(err)
 		}
 	} else {
 		// append if the file already exists
 		file, err = os.OpenFile(outputFile, os.O_WRONLY, 0644)
 		if err != nil {
-			log.Error(err)
-			os.Exit(1)
+			panic(err)
 		}
 	}
 

@@ -11,9 +11,9 @@ import (
 func makeClient(conf *config.Config) *openai.Client {
 	config := openai.DefaultConfig(conf.APIKey)
 	config.OrgID = conf.Org
-	if config.BaseURL != "" {
-		config.BaseURL = conf.BaseURL
-	}
+	// if config.BaseURL != "" {
+	// 	config.BaseURL = conf.BaseURL
+	// }
 
 	return openai.NewClientWithConfig(config)
 }

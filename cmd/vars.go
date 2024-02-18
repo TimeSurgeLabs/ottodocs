@@ -50,8 +50,7 @@ var previousTag string
 var currentTag string
 
 var contextFiles []string
-
-// var routerFiles []string
+var routerFiles []string
 
 var displayHistory bool
 var loadHistory string

@@ -28,7 +28,17 @@ var API_DOCS_PROMPT string = `You are a helpful assistant who documents an HTTP 
 - The documentation should note the possible responses and their meanings.
 - Always document all the endpoints, even if there are multiple similar endpoints.`
 
-var API_ENDPOINTS_PROMPT string = `You are a helpful assistant who lists all the endpoints in an HTTP API. Given a code base for an API of any language, list all the endpoints in the API. Only output the endpoints, not the rest of the code. Always output as valid JSON, for example: {"endpoints": ["GET /api/v1/user", "POST /api/v1/user"]}.`
+var API_ENDPOINTS_PROMPT string = `You are a helpful assistant who lists all the endpoints in an HTTP API. Given a code base for an API of any language, list all the endpoints in the API. Only output the endpoints, not the rest of the code. Always output as valid JSON, for example: {"endpoints": ["GET /api/v1/user", "POST /api/v1/user"]}. Call the function give the user the endpoints.`
+
+var API_DOCUMENT_ENDPOINT_PROMPT string = `You are a helpful assistant who documents an HTTP API endpoint. Given a code base for an API of any language and an endpoint, document how to use the endpoint with the following rules:
+- The documentation must be in valid markdown.
+- The endpoint should be a first level heading.
+- The documentation should include any query parameters, request body, and response body.
+- The documentation should note which parameters or fields are required and which are optional.
+- The documentation should note the type of each parameter or field.
+- The documentation should note the format of each parameter or field.
+- The documentation should note the description of each parameter or field.
+- The documentation should note the possible responses and their meanings.`
 
 var QUESTION_PROMPT string = `You are a helpful assistant who answers questions about code. The answer doesn't have to be extremely verbose, but it should be enough to help a new developer understand the code. You must answer the question with the following rules:
 - The answer must be relevant to the question and the given code.
