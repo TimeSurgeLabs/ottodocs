@@ -151,6 +151,38 @@ Requires Git to be installed on the system. If a title is not provided, one will
 			prompt = "Title: " + title + "\n\nGit logs: " + logs + "\n\nGit diff: " + diff
 		}
 
+		if issuePRNumber != 0 {
+			remote, err := git.GetRemote("origin")
+			if err != nil {
+				log.Errorf("Error getting remote: %s", err)
+				os.Exit(1)
+			}
+
+			log.Debug("Getting repo info...")
+			// get repo and owner
+			owner, repo, err := git.ExtractOriginInfo(remote)
+			if err != nil {
+				log.Errorf("Error extracting origin info: %s", err)
+				os.Exit(1)
+			}
+
+			log.Debugf("Owner: %s, Repo: %s", owner, repo)
+			log.Debug("Getting issue...")
+
+			// get issue
+			issue, err := gh.GetIssue(owner, repo, issuePRNumber, c)
+			if err != nil {
+				log.Errorf("Error getting issue: %s", err)
+				os.Exit(1)
+			}
+
+			body := issue.Issue.Body
+			title := issue.Issue.Title
+
+			log.Debug("Constructing prompt...")
+			prompt += "\n\nRelated Issue Title: " + title + "\nRelated Issue Body: " + body
+		}
+
 		utils.PrintColoredText("Body: ", c.OttoColor)
 		stream, err := ai.PRBody(prompt, c)
 		if err != nil {
@@ -230,4 +262,5 @@ func init() {
 	prCmd.Flags().BoolVarP(&push, "publish", "p", false, "Create the pull request. Must have a remote named \"origin\"")
 	prCmd.Flags().BoolVarP(&verbose, "verbose", "v", false, "Verbose output")
 	prCmd.Flags().BoolVarP(&force, "force", "f", false, "Force the creation of the pull request")
+	prCmd.Flags().IntVarP(&issuePRNumber, "issue", "i", 0, "Issue number to associate with the pull request")
 }
