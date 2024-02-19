@@ -36,7 +36,7 @@ func OriginToGitHub(origin string) (string, error) {
 func ExtractOriginInfo(gitURL string) (string, string, error) {
 	// Regular expression to match both SSH and HTTPS URLs
 	// This pattern supports optional ".git" at the end and optional "https://" or "git@" at the beginning
-	regexPattern := `^(?:(?:https:\/\/|git@)github\.com(?:\/|:))?(\w+)\/(\w+)(?:\.git)?$`
+	regexPattern := `^(?:(?:https:\/\/|git@)github\.com(?:\/|:))?([\w-]+)\/([\w-]+)(?:\.git)?$`
 	regex := regexp.MustCompile(regexPattern)
 
 	matches := regex.FindStringSubmatch(gitURL)

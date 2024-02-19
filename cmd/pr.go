@@ -234,8 +234,12 @@ Requires Git to be installed on the system. If a title is not provided, one will
 		log.Debugf("Owner: %s", owner)
 		log.Debugf("Repo: %s", repo)
 
+		if issuePRNumber != 0 {
+			body += "\n" + "Closes #" + fmt.Sprint(issuePRNumber)
+		}
+
 		data := make(map[string]string)
-		data["title"] = title
+		data["title"] = utils.RemoveQuotes(title)
 		data["body"] = body + "\n\n" + c.Signature
 		data["head"] = currentBranch
 		data["base"] = base

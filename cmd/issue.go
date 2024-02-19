@@ -73,6 +73,7 @@ var issueCmd = &cobra.Command{
 			os.Exit(1)
 		}
 
+		log.Debugf("Remote: %s", remote)
 		log.Debug("Getting repo info...")
 		// get repo and owner
 		owner, repo, err := git.ExtractOriginInfo(remote)
